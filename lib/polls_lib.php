@@ -136,7 +136,10 @@ function polls_get_page_content_list($container_guid = NULL) {
 		$return['content'] = $list;
 	}
 	
-	$return['content'] = $header . $return['content'];
+	// Get latest poll for display
+	$latest = polls_get_latest_poll_content();
+	
+	$return['content'] = $latest . $header . $return['content'];
 
 	return $return;
 }
@@ -194,9 +197,26 @@ function polls_get_page_content_friends($user_guid) {
 		'new_link' => elgg_get_site_url() . "pg/polls/new/" . $container_guid,
 	));
 	
-	$return['content'] = $header . $return['content'];
+	// Get latest poll for display
+	$latest = polls_get_latest_poll_content();
+	
+	$return['content'] = $latest . $header . $return['content'];
 	
 	return $return;
+}
+
+function polls_get_latest_poll_content() {
+	
+	$latest_poll = elgg_get_entities(array(
+		'type' => 'object',
+		'subtype' => 'poll',
+		'limit' => 1
+	));
+	
+	$content = elgg_view_title(elgg_echo('polls:title:latest'));
+	$content .= elgg_view('polls/poll_container', array('entity' => $latest_poll[0]));
+	
+	return $content;
 }
 
 ?>

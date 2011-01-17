@@ -62,7 +62,7 @@ if (!empty($tags)) {
 if ($vars['full']) { // Full view
 	// Owner Icon 
 	$owner_icon = elgg_view('profile/icon', array('entity' => $owner, 'size' => 'tiny'));
-	$poll_options = elgg_view('polls/forms/poll', $vars);
+	$poll_container = elgg_view('polls/poll_container', $vars);
 	
 	// Display content
 	echo <<<___END
@@ -87,9 +87,7 @@ if ($vars['full']) { // Full view
 			$tags
 		</div>
 		</div>
-		<div id='poll-ajax-container-{$vars['entity']->getGUID()}'>
-			$poll_options
-		</div>
+		$poll_container
 		<div class='polls_bottom'></div>
 	</div>
 ___END;

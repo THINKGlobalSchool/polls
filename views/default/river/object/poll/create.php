@@ -24,12 +24,8 @@ $string .= "<span class='entity_subtext'>" . elgg_view_friendly_time($object->ti
 if (isloggedin()) {
 	$string .= '<a class="river_comment_form_button link">' . elgg_echo('generic_comments:text') . '</a>';
 	$string .= elgg_view('likes/forms/link', array('entity' => $object));
-	
-	$poll_form = elgg_view('polls/forms/poll', array('entity' => $object));
-	
-	$poll_options = "<div id='poll-ajax-container-{$object->getGUID()}'>
-						$poll_form
-					</div>";
+		
+	$poll_container = elgg_view('polls/poll_container', array('entity' => $object));
 
 }
 $string .= "</span>";
@@ -42,5 +38,5 @@ if (strlen($contents) > 200) {
 	$string .= $contents;
 }
 $string .=  '</div>';
-echo $string . $poll_options;
+echo $string . $poll_container;
 

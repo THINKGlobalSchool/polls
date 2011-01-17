@@ -23,6 +23,7 @@ $english = array(
 	'polls:title:userpolls' => '%s\'s Polls',
 	'polls:title:ownedpoll' => '%s',
 	'polls:title:friendspolls' => 'Friends\' Polls',
+	'polls:title:latest' => "Latest Poll",
 
 	// Menu items
 	'polls:menu:allpolls' => 'All Polls',
