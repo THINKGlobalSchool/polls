@@ -74,7 +74,7 @@ function polls_get_page_content_list($container_guid = NULL) {
 		'type' => 'object',
 		'subtype' => 'poll',
 		'full_view' => FALSE,
-		'limit' => 5
+		'limit' => 10
 	);
 
 	$loggedin_userid = get_loggedin_userid();
@@ -123,13 +123,27 @@ function polls_get_page_content_list($container_guid = NULL) {
 		'new_link' => elgg_get_site_url() . "pg/polls/new/" . $container_guid,
 	));
 	
+	// Complete/Incomplete menu
+	$header .= elgg_view('polls/nav_show_by_complete', array('return_url' => 'pg/polls'));
+	
 	if ($container_guid && ($container_guid != $loggedin_userid)) {
 		// do not show content header when viewing other users' posts
 		$header = elgg_view('page_elements/content_header_member', array('type' => 'polls'));
 	}
-	
 
-	$list = elgg_list_entities($options);
+	// Check status.. 
+	if (get_input('status') == 'complete') {
+		$options['relationship'] = HAS_VOTED_RELATIONSHIP;
+		$options['relationship_guid'] = get_loggedin_userid(); 
+		$options['inverse_relationship'] = FALSE;
+		// Nice and easy here, just grab entities with the voted relationship
+		$list = elgg_list_entities_from_relationship($options);
+	} else {
+		// Little funky, registering my own callback to filter out incomplete
+		// since theres not such thing as 'elgg_list_entities_WITHOUT_relationship'
+		$list = elgg_list_entities($options, 'polls_get_incomplete');
+	}
+
 	if (!$list) {
 		$return['content'] = elgg_view('polls/noresults');
 	} else {
@@ -205,6 +219,10 @@ function polls_get_page_content_friends($user_guid) {
 	return $return;
 }
 
+/**
+ * Helper function to grab and display the latest poll
+ * @return html
+ */
 function polls_get_latest_poll_content() {
 	
 	$latest_poll = elgg_get_entities(array(
@@ -217,6 +235,21 @@ function polls_get_latest_poll_content() {
 	$content .= elgg_view('polls/poll_container', array('entity' => $latest_poll[0]));
 	
 	return $content;
+}
+
+/**
+ * Helper function to grab and filter out incomplete polls
+ * @return array
+ */
+function polls_get_incomplete($options) {
+	$entities = elgg_get_entities($options);
+	
+	foreach($entities as $key => $entity) {
+		if (check_entity_relationship(get_loggedin_userid(), HAS_VOTED_RELATIONSHIP, $entity->getGUID())) {
+			unset($entities[$key]);
+		}
+	}
+	return $entities;
 }
 
 ?>

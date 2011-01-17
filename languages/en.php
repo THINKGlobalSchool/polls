@@ -42,6 +42,8 @@ $english = array(
 	'polls:label:options' => 'Poll Options',
 	'polls:label:addoption' => 'Add Option',
 	'polls:label:vote' => 'Submit',
+	'polls:label:complete' => 'Complete',
+	'polls:label:incomplete' => 'Incomplete',
 	
 	// River
 	'polls:river:poll:create' => '%s created a Poll titled %s',
