@@ -22,6 +22,10 @@ function polls_init() {
 	// Extend CSS
 	elgg_extend_view('css/screen','polls/css');
 	
+	// Add in the JS
+	elgg_extend_view('metatags', 'polls/ajaxpoll_js');
+	
+	
 	// Page handler
 	register_page_handler('polls','polls_page_handler');
 
@@ -79,6 +83,13 @@ function polls_page_handler($page) {
 		case 'new':
 			$params = polls_get_page_content_edit($page_type, $page[1]);
 			break;
+		case 'ajax_result':
+			$poll = get_entity($page[1]);
+			if ($poll) {
+				echo elgg_view('polls/poll_results', array('entity' => $poll));
+			}
+			exit; // Ajax, don't load anything else
+		break;
 		//case 'edit':
 		//	$params = polls_get_page_content_edit($page_type, $page[1]);
 		//	break;

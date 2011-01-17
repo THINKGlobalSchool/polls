@@ -14,11 +14,12 @@ $poll = $vars['entity'];
 
 // Only display if we haven't voted yet
 if (!check_entity_relationship(get_loggedin_userid(), HAS_VOTED_RELATIONSHIP, $poll->getGUID())) {
-	return true;
-}
+	echo elgg_view('polls/forms/poll', $vars);
+	return;
+} 
 
 $options = unserialize($poll->poll_content);
-$content .= "<table id='poll-vote'>";
+$content .= "<table class='poll-vote'>";
 $content .= "<tr><td class='poll-title' colspan='2'>{$poll->title}</td></tr>";
 
 // Count total votes

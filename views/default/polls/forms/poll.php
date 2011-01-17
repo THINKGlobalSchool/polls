@@ -14,15 +14,16 @@ $poll = $vars['entity'];
 
 // Check if we've already voted
 if (check_entity_relationship(get_loggedin_userid(), HAS_VOTED_RELATIONSHIP, $poll->getGUID())) {
-	return true;
+	echo elgg_view('polls/poll_results', $vars);
+	return;
 }
 
 $options = unserialize($poll->poll_content);
 $action = elgg_get_site_url() . 'action/polls/vote';
 
 $vote_input = elgg_view('input/submit', array(
-	'internalid' => 'submit_vote',
 	'internalname' => 'submit_vote',
+	'class' => "submit-vote-{$poll->getGUID()}",
 	'value' => elgg_echo('polls:label:vote')
 ));
 
@@ -34,7 +35,7 @@ $poll_input = elgg_view('input/hidden', array(
 
 
 
-$form_body .= "<table id='poll-vote'>";
+$form_body .= "<table class='poll-vote'>";
 $form_body .= "<tr><td class='poll-title' colspan='3'>{$poll->title}</td></tr>";
 
 // Get options
@@ -51,10 +52,34 @@ $form_body .= "<tr><td class='poll-foot' colspan='3'>$vote_input</td></tr>";
 $form_body .= "</table>";
 $form_body .=  $poll_input;
 
+$script = <<<EOT
+	<script type='text/javascript'>
+	$(document).ready(function () {
+		$(".submit-vote-{$poll->getGUID()}").click(
+			function() {
+				// Check to make sure we have selected an option
+				if ($('#polls-vote-form-{$poll->getGUID()}  input:radio[name=poll_vote]:checked').val()) {
+					$(".submit-vote-{$poll->getGUID()}").attr('disabled', 'disabled');
+					data = $("#polls-vote-form-{$poll->getGUID()}").serialize();
+					submitPollVote(data, "{$poll->getGUID()}");
+					return false;
+				} else {
+					$('#polls-vote-form-{$poll->getGUID()} .poll-foot').append('<p class="poll-error">* You need to make a choice!</p>');
+					return false;
+				}
+				
+				
+			}
+		);
+	});
+	</script>
+EOT;
+
 
 echo elgg_view('input/form', array(
 	'internalname' => 'polls_vote_form',
-	'internalid' => 'polls-vote-form',
+	'internalid' => 'polls-vote-form-' . $poll->getGUID(),
+	'class' => 'polls-vote-form',
 	'body' => $form_body,
 	'action' => $action
 )) . $script;

@@ -15,18 +15,24 @@ $guid = get_input('poll_guid', null);
 $poll = get_entity($guid);
 
 // Make sure we have a poll, and that the user hasn't voted
-if (elgg_instanceof($poll, 'object', 'poll') && !check_entity_relationship(get_loggedin_userid(), HAS_VOTED_RELATIONSHIP, $poll->getGUID())) {
+$has_not_voted = !check_entity_relationship(get_loggedin_userid(), HAS_VOTED_RELATIONSHIP, $poll->getGUID());
+
+if (elgg_instanceof($poll, 'object', 'poll') && $has_not_voted) {
 	if ($poll->annotate($vote, $vote, $poll->access_id, get_loggedin_userid())) {
 		add_entity_relationship(get_loggedin_userid(), HAS_VOTED_RELATIONSHIP, $guid);
-		system_message(elgg_echo('polls:success:vote'));
-		forward(REFERER);
+		echo $guid;
+		exit;
+		//forward(REFERER);
 	} else {
-		system_message(elgg_echo('polls:error:vote'));
-		forward(REFERER);
+		//forward(REFERER);
+		echo false;
+		exit;
 	}
 } else {
-	register_error(elgg_echo('polls:error:notfound'));
-	forward(REFERER);
+	//forward(REFERER);
+	echo false;
+	exit;
+
 }
 
 ?>

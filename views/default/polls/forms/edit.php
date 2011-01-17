@@ -32,7 +32,7 @@ $table_id = 'poll';
 <?php
 
 // Add in the JS
-elgg_extend_view('metatags', 'polls/js');
+elgg_extend_view('metatags', 'polls/editpoll_js');
 
 // Some defaults
 $num_rows = 4;

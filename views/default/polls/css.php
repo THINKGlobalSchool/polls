@@ -22,7 +22,7 @@
 }
 
 /* Vote table */
-table#poll-vote {
+table.poll-vote {
 	margin-top: 15px;
 	margin-bottom: 15px;
 	width: auto;
@@ -34,23 +34,23 @@ table#poll-vote {
  	-moz-box-shadow: 2px 1px 5px rgba(60, 6, 10, 0.8);
 }
 
-table#poll-vote tr:nth-child(odd) { 
+table.poll-vote tr:nth-child(odd) { 
 	background-color:#fff; 
 }
-table#poll-vote tr:nth-child(even) { 
+table.poll-vote tr:nth-child(even) { 
 	background-color:#eee; 
 }
 
-table#poll-vote .poll-foot {
+table.poll-vote .poll-foot {
 	background-color:#fff; 
 	text-align: center;
 }
 
-table#poll-vote td {
+table.poll-vote td {
 padding: 4px;
 }
 
-table#poll-vote td.poll-title {
+table.poll-vote td.poll-title {
 	text-align: center;
 	font-weight: bold;
 	font-size: 120%;
@@ -58,31 +58,45 @@ table#poll-vote td.poll-title {
 	color: #444444;
 }
 
-table#poll-vote td.option-num {
+table.poll-vote td.option-num {
 	width: 25px;
 	padding-left: 15px;
 }
 
-table#poll-vote td.option-text {
+table.poll-vote td.option-text {
 	width: auto;
 	padding-left: 10px;
 	padding-right: 10px;
 }
 
-table#poll-vote td.option-input {
+table.poll-vote td.option-input {
 	width: 25px;
 	padding-right: 15px;
 }
 
-table#poll-vote td.option-count {
+table.poll-vote td.option-count {
 	width: 70px;
 	padding-right: 15px;
 }
 
-
-
-form#polls-vote-form {
+form.polls-vote-form {
 	width: auto;
+}
+
+p.success_message {
+	font-size: 110%;
+	font-weight: bold;
+	margin-left: auto;
+	margin-right: auto;
+	width: 250px;
+	text-align: center;
+}
+
+p.poll-error {
+	font-size: 90%;
+	width: auto;
+	color: red;
+	font-weight: bold;
 }
 
 /* Poll form CSS */
@@ -121,4 +135,17 @@ table#poll .poll_input {
 	height: 20px;
 	background-color: #000000;
 	background-image: url("<?php echo elgg_get_site_url() . "mod/polls/graphics/minus.gif"; ?>");
+}
+
+/* Spinner */
+.poll-spinner {
+	margin-top: 15px;
+	margin-bottom: 15px;
+	margin-left: auto;
+	margin-right: auto;
+	border: 1px solid #666666;
+	padding: 10px;
+	background: #FFFFFF;
+	-webkit-box-shadow: 2px 1px 5px rgba(60, 6, 10, 0.8);
+ 	-moz-box-shadow: 2px 1px 5px rgba(60, 6, 10, 0.8);
 }
