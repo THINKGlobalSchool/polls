@@ -25,6 +25,8 @@ function polls_init() {
 	// Add in the JS
 	elgg_extend_view('metatags', 'polls/ajaxpoll_js');
 	
+	// Add poll sidebar
+	elgg_extend_view('group-extender/sidebar','polls/group_polls', 2);
 	
 	// Page handler
 	register_page_handler('polls','polls_page_handler');
@@ -34,6 +36,9 @@ function polls_init() {
 
 	// Add submenus
 	elgg_register_event_handler('pagesetup','system','polls_submenus');
+	
+	// add the group pages tool option     
+    add_group_tool_option('polls',elgg_echo('groups:enablepolls'),true);
 					
 	// Register actions
 	elgg_register_action('polls/create', $CONFIG->pluginspath . 'polls/actions/create.php');
@@ -45,6 +50,9 @@ function polls_init() {
 	
 	// Comment handler
 	elgg_register_plugin_hook_handler('entity:annotate', 'object', 'poll_annotate_comments');
+	
+	// Profile hook	
+	elgg_register_plugin_hook_handler('profile_menu', 'profile', 'polls_profile_menu');
 	
 	// Register type
 	register_entity_type('object', 'poll');		
@@ -94,7 +102,7 @@ function polls_page_handler($page) {
 		//	$params = polls_get_page_content_edit($page_type, $page[1]);
 		//	break;
 		case 'group':
-			//$params = polls_get_page_content_list($page[1]);
+			$params = polls_get_page_content_list($page[1]);
 			break;
 		case 'all':
 		default:
@@ -162,6 +170,27 @@ function poll_annotate_comments($hook, $entity_type, $returnvalue, $params) {
 		return elgg_view_comments($entity);
 	}
 	
+}
+
+/**
+ * Plugin hook to add polls's to users profile block
+ * 	
+ * @param unknown_type $hook
+ * @param unknown_type $entity_type
+ * @param unknown_type $returnvalue
+ * @param unknown_type $params
+ * @return unknown
+ */
+function polls_profile_menu($hook, $entity_type, $return_value, $params) {
+	// Only display todo link for users or groups with enabled todos
+	if ($params['owner'] instanceof ElggUser || $params['owner']->polls_enable == 'yes') {
+		$return_value[] = array(
+			'text' => elgg_echo('poll'),
+			'href' => elgg_get_site_url() . "pg/polls/group/{$params['owner']->getGUID()}/owner",
+		);
+	}
+
+	return $return_value;
 }
 
 register_elgg_event_handler('init', 'system', 'polls_init');

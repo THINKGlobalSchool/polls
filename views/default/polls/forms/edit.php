@@ -62,6 +62,8 @@ if ($vars['entity']) {
 	$access_id = ACCESS_LOGGED_IN;
 }
 
+// Container input
+$container_guid_input = elgg_view('input/hidden', array('internalname' => 'container_guid', 'value' => elgg_get_page_owner_guid()));
 
 // Load sticky form values
 if (elgg_is_sticky_form('polls_save_form')) {
@@ -163,6 +165,7 @@ $form_body = <<<EOT
 			$search_input
 			$poll_guid
 			$num_rows_input
+			$container_guid_input
 		</p>
 	</div>
 EOT;

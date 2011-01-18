@@ -13,7 +13,7 @@
 $poll = $vars['entity'];
 
 // Check if we've already voted
-if (check_entity_relationship(get_loggedin_userid(), HAS_VOTED_RELATIONSHIP, $poll->getGUID())) {
+if (has_user_completed_poll(get_loggedin_user(), $poll)) {
 	echo elgg_view('polls/poll_results', $vars);
 	return;
 }

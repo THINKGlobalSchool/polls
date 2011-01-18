@@ -44,6 +44,7 @@ $english = array(
 	'polls:label:vote' => 'Submit',
 	'polls:label:complete' => 'Complete',
 	'polls:label:incomplete' => 'Incomplete',
+	'polls:label:grouppolls' => 'Group Polls',
 	
 	// River
 	'polls:river:poll:create' => '%s created a Poll titled %s',
@@ -59,6 +60,7 @@ $english = array(
 	'polls:success:vote' => 'Thanks for voting!',
 
 	// Other content
+	'groups:enablepolls' => 'Enable group polls',
 
 );
 

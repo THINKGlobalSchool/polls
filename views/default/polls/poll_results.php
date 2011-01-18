@@ -13,7 +13,7 @@
 $poll = $vars['entity'];
 
 // Only display if we haven't voted yet
-if (!check_entity_relationship(get_loggedin_userid(), HAS_VOTED_RELATIONSHIP, $poll->getGUID())) {
+if (!has_user_completed_poll(get_loggedin_user(), $poll)) {
 	echo elgg_view('polls/forms/poll', $vars);
 	return;
 } 

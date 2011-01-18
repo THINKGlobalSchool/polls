@@ -49,7 +49,11 @@ function polls_get_page_content_view($guid) {
 	if (elgg_instanceof($poll, 'object', 'poll')) {
 		$owner = get_entity($poll->container_guid);
 		set_page_owner($owner->getGUID());
-		elgg_push_breadcrumb($owner->name, elgg_get_site_url() . 'pg/polls/owner/' . $owner->username);
+		if (elgg_instanceof($owner, 'group')) {
+			elgg_push_breadcrumb($owner->name, elgg_get_site_url() . "pg/polls/group/{$owner->getGUID()}/owner");
+		} else {
+			elgg_push_breadcrumb($owner->name, elgg_get_site_url() . 'pg/polls/owner/' . $owner->username);
+		}
 		elgg_push_breadcrumb($poll->title, $poll->getURL());
 		$return['title'] = $poll->title;
 		$return['content'] = elgg_view_entity($poll, true);
@@ -94,7 +98,7 @@ function polls_get_page_content_list($container_guid = NULL) {
 			$return['filter_context'] = 'mine';
 		} 
 
-		/* Groups..
+		/*Groups..
 		if (elgg_instanceof($container, 'group')) {
 			$return['filter'] = '';
 			if ($container->isMember(get_loggedin_user())) {
@@ -107,8 +111,8 @@ function polls_get_page_content_list($container_guid = NULL) {
 				$buttons = elgg_view('output/url', $params);
 				$return['buttons'] = $buttons;
 			}
-		}
-		*/
+		}*/
+		
 	} else {
 		$return['filter_context'] = 'everyone';
 		$return['title'] = elgg_echo('polls:title:allpolls');
@@ -127,8 +131,13 @@ function polls_get_page_content_list($container_guid = NULL) {
 	$header .= elgg_view('polls/nav_show_by_complete', array('return_url' => 'pg/polls'));
 	
 	if ($container_guid && ($container_guid != $loggedin_userid)) {
-		// do not show content header when viewing other users' posts
-		$header = elgg_view('page_elements/content_header_member', array('type' => 'polls'));
+		if (elgg_instanceof($container, 'group') && $container->isMember(get_loggedin_user())) {
+			$url = "pg/polls/new/$container->guid";
+			$header = elgg_view('page_elements/content_header', array('type' => 'poll', 'new_link' => $url));
+		} else {
+			// do not show content header when viewing other users' posts
+			$header = elgg_view('page_elements/content_header_member', array('type' => 'poll'));
+		}	
 	}
 
 	// Check status.. 
@@ -139,9 +148,10 @@ function polls_get_page_content_list($container_guid = NULL) {
 		// Nice and easy here, just grab entities with the voted relationship
 		$list = elgg_list_entities_from_relationship($options);
 	} else {
-		// Little funky, registering my own callback to filter out incomplete
+		$options['pagination'] = TRUE;
+		// Little funky, registering my own function to grab incomplete polls
 		// since theres not such thing as 'elgg_list_entities_WITHOUT_relationship'
-		$list = elgg_list_entities($options, 'polls_get_incomplete');
+		$list = polls_list_incomplete($options);
 	}
 
 	if (!$list) {
@@ -241,15 +251,42 @@ function polls_get_latest_poll_content() {
  * Helper function to grab and filter out incomplete polls
  * @return array
  */
-function polls_get_incomplete($options) {
+function polls_list_incomplete($options) {
+	// Going to do some hacking.. 
+	$offset = get_input('offset');
+
+	// Store limit, and set to 0
+	$limit = $options['limit'];
+	$options['limit'] = 0;
+	
+	// Grab entities
 	$entities = elgg_get_entities($options);
 	
+	// Remove completed
 	foreach($entities as $key => $entity) {
-		if (check_entity_relationship(get_loggedin_userid(), HAS_VOTED_RELATIONSHIP, $entity->getGUID())) {
+		if (has_user_completed_poll(get_loggedin_user(), $entity)) {
 			unset($entities[$key]);
 		}
 	}
-	return $entities;
+	
+	// Hack it all back together
+	$return = elgg_view_entity_list(
+		array_slice($entities, $offset, $limit), // Note to self, array_slice is awesome
+		count($entities), 
+		$offset,
+		$limit, 
+		$options['full_view'], 
+		$options['view_type_toggle'], 
+		$options['pagination']
+	);	
+	return $return;
+}
+
+/**
+ * Helper function to determine if user has completed a poll
+ */
+function has_user_completed_poll($user, $poll) {
+	return check_entity_relationship($user->getGUID(), HAS_VOTED_RELATIONSHIP, $poll->getGUID());
 }
 
 ?>

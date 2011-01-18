@@ -99,6 +99,8 @@ p.poll-error {
 	font-weight: bold;
 }
 
+
+
 /* Poll form CSS */
 table#poll {
 	width: 100%;
@@ -148,4 +150,9 @@ table#poll .poll_input {
 	background: #FFFFFF;
 	-webkit-box-shadow: 2px 1px 5px rgba(60, 6, 10, 0.8);
  	-moz-box-shadow: 2px 1px 5px rgba(60, 6, 10, 0.8);
+}
+
+/** Tweaks for poll sidebar in groups **/
+.poll-sidebar .entity_listing_info {
+	width: auto;
 }

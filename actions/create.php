@@ -17,7 +17,8 @@ $description = get_input('poll_description');
 $tags = string_to_tag_array(get_input('poll_tags'));
 $access = get_input('poll_access');
 $rows = get_input('num_rows');
-
+$container_guid = get_input('container_guid');
+ 
 // Get poll content
 for($i = 0; $i < $rows; $i++) {
 	$poll_content[$i] = get_input("$i");	
@@ -37,6 +38,7 @@ $poll->title = $title;
 $poll->description = $description;
 $poll->tags = $tags;
 $poll->access_id = $access;
+$poll->container_guid = $container_guid;
 $poll->poll_content = serialize($poll_content);
 
 // If error saving, register error and return
@@ -53,7 +55,7 @@ add_to_river('river/object/poll/create', 'create', get_loggedin_userid(), $poll-
 
 // Forward on
 system_message(elgg_echo('polls:success:save'));
-forward('pg/polls');
+forward($poll->getURL());
 
 
 ?>
