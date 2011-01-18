@@ -118,6 +118,9 @@ function polls_get_page_content_list($container_guid = NULL) {
 		$return['title'] = elgg_echo('polls:title:allpolls');
 	}
 	
+	// Get latest poll for display
+	$latest = polls_get_latest_poll_content();
+	
 	$header = elgg_view('page_elements/content_header', array(
 		'context' => $return['filter_context'],
 		'type' => 'poll',
@@ -132,6 +135,8 @@ function polls_get_page_content_list($container_guid = NULL) {
 	
 	if ($container_guid && ($container_guid != $loggedin_userid)) {
 		if (elgg_instanceof($container, 'group') && $container->isMember(get_loggedin_user())) {
+			// Get latest group poll for display
+			$latest = polls_get_latest_poll_content($container_guid);
 			$url = "pg/polls/new/$container->guid";
 			$header = elgg_view('page_elements/content_header', array('type' => 'poll', 'new_link' => $url));
 		} else {
@@ -159,9 +164,6 @@ function polls_get_page_content_list($container_guid = NULL) {
 	} else {
 		$return['content'] = $list;
 	}
-	
-	// Get latest poll for display
-	$latest = polls_get_latest_poll_content();
 	
 	$return['content'] = $latest . $header . $return['content'];
 
@@ -233,16 +235,18 @@ function polls_get_page_content_friends($user_guid) {
  * Helper function to grab and display the latest poll
  * @return html
  */
-function polls_get_latest_poll_content() {
-	
+function polls_get_latest_poll_content($container_guid = ELGG_ENTITIES_ANY_VALUE) {	
 	$latest_poll = elgg_get_entities(array(
 		'type' => 'object',
 		'subtype' => 'poll',
-		'limit' => 1
+		'limit' => 1, 
+		'container_guid' => $container_guid
 	));
 	
-	$content = elgg_view_title(elgg_echo('polls:title:latest'));
-	$content .= elgg_view('polls/poll_container', array('entity' => $latest_poll[0]));
+	if($latest_poll[0]) {
+		$content = elgg_view_title(elgg_echo('polls:title:latest'));
+		$content .= elgg_view('polls/poll_container', array('entity' => $latest_poll[0]));
+	}
 	
 	return $content;
 }

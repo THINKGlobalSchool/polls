@@ -17,7 +17,12 @@ if (elgg_instanceof($poll, 'object', 'poll') && $poll->canEdit()) {
 	$container = get_entity($poll->container_guid);
 	if ($poll->delete()) {
 		system_message(elgg_echo('polls:success:delete'));
-		forward("pg/polls/{$container->username}");
+		if (elgg_instanceof($container, 'group')) {
+			forward("pg/polls/group/{$container->getGUID()}/owner");
+		} else {
+			forward("pg/polls/{$container->username}");
+		}
+		
 	} else {
 		register_error(elgg_echo('polls:error:delete'));
 	}
