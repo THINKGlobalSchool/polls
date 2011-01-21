@@ -19,6 +19,7 @@ $english = array(
 	
 	// Page titles 
 	'polls:title:allpolls' => 'All Polls',
+	'polls:title:new' => 'New Poll', 
 	'polls:title:edit' => 'Edit Poll',
 	'polls:title:userpolls' => '%s\'s Polls',
 	'polls:title:ownedpoll' => '%s',

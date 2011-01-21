@@ -131,6 +131,7 @@ $polls_save_input = elgg_view('input/submit', array(
 ));
 
 $form_body = <<<EOT
+	<br />
 	<div id='polls_save'>
 		<p>
 			<label>$title_label</label>

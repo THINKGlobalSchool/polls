@@ -14,7 +14,8 @@
 function polls_get_page_content_edit($page_type, $guid) {
 	$vars = array();
 	if ($page_type == 'edit') {
-		$$poll = get_entity((int)$guid);
+		$title = elgg_echo('polls:title:edit');
+		$poll = get_entity((int)$guid);
 
 		if (elgg_instanceof($poll, 'object', 'poll') && $poll->canEdit()) {
 			$vars['entity'] = $poll;
@@ -22,12 +23,15 @@ function polls_get_page_content_edit($page_type, $guid) {
 			elgg_push_breadcrumb($poll->title, $poll->getURL());
 			elgg_push_breadcrumb(elgg_echo('edit'));
 
-			$content = elgg_view('polls/forms/edit', $vars);
+			$content = elgg_view_title($title) . elgg_view('polls/forms/edit', $vars);
 	
 		} else {
 			$content = elgg_echo('polls:error:notfound');
 		}
+		
+	
 	} else {
+		$title = elgg_echo('polls:title:new');
 		if (!$guid) {
 			$container = get_loggedin_user();
 		} else {
@@ -36,11 +40,12 @@ function polls_get_page_content_edit($page_type, $guid) {
 		elgg_set_page_owner_guid($container->guid);
 		
 		elgg_push_breadcrumb(elgg_echo('polls:label:new'));
-		$content = elgg_view('polls/forms/edit', $vars);
+		
+		$content = elgg_view_title($title) . elgg_view('polls/forms/edit', $vars);
 	}
 
 
-	return array('content' => $content, 'title' => elgg_echo('polls:title:edit'), 'layout' => 'one_column_with_sidebar');
+	return array('content' => $content, 'title' => $title, 'layout' => 'one_column_with_sidebar');
 }
 
 /* View a poll  */
