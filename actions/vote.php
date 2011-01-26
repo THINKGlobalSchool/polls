@@ -20,6 +20,7 @@ $has_not_voted = !has_user_completed_poll(get_loggedin_user(), $poll);
 if (elgg_instanceof($poll, 'object', 'poll') && $has_not_voted) {
 	if ($poll->annotate($vote, $vote, $poll->access_id, get_loggedin_userid())) {
 		add_entity_relationship(get_loggedin_userid(), HAS_VOTED_RELATIONSHIP, $guid);
+		update_entity_last_action($guid);
 		echo $guid;
 		exit;
 		//forward(REFERER);
