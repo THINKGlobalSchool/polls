@@ -35,9 +35,10 @@ foreach($options as $key => $option) {
 	
 	$owner_content = "";
 	// Owner content
-	if ($poll->canEdit() && $annotations && get_context() == "polls-detailed") {
+	if ($poll->canEdit() && $annotations) {
 		$i = 0;
-		$owner_content = "<div class='poll-owner-content'>";
+		$box_id = "poll-details-{$poll->getGUID()}";
+		$owner_content .= "<div class='$box_id poll-owner-content'>";
 		foreach ($annotations as $vote) {
 			$user = get_entity($vote->owner_guid);
 			$owner_content .= "<a href='{$user->getURL()}'>{$user->name}</a>";
@@ -58,9 +59,21 @@ foreach($options as $key => $option) {
 	
 
 }
-$content .= "<tr><td class='poll-foot' colspan='2'>&nbsp;</td></tr>";
+$content .= "<tr><td class='poll-foot' colspan='2'><a class='poll-show-link' onclick='javascript:toggle_poll_details(\"$box_id\");'>" . elgg_echo('polls:label:showresults') . "</a></td></tr>";
 $content .= "</table>";
 
-echo $content . $owner_content;
+// Add script if we're the owner
+if ($poll->canEdit()) {
+	$script = <<<EOT
+		<script type='text/javascript'>
+			function toggle_poll_details(id) {
+				$('.' + id).toggle('fast');
+				return false;
+			}
+		</script>
+EOT;
+}
+
+echo $content . $owner_content . $script;
 
 ?>

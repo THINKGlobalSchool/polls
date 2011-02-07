@@ -45,6 +45,10 @@ table.poll-vote .poll-foot {
 	text-align: center;
 }
 
+table.poll-vote a {
+	font-weight: normal !important;
+}
+
 table.poll-vote td {
 	padding: 4px;
 }
@@ -85,6 +89,13 @@ table.poll-vote div.poll-owner-content {
 	padding: 5px;
 	margin-top: 2px;
 	margin-bottom: 2px;
+	display: none;
+	max-width: 350px;
+}
+
+table.poll-vote a.poll-show-link {
+	font-size: 80%;
+	cursor: pointer;
 }
 
 form.polls-vote-form {
