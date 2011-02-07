@@ -36,13 +36,13 @@ if ($vars['entity']->canEdit()) {
 //	$edit_link = "<span class='entity_edit'><a href=\"$edit_url\">" . elgg_echo('edit') . '</a></span>';
 
 	$delete_url = "action/polls/delete?guid=" . $vars['entity']->guid;
-	$delete_link .= "<span class='delete_button'>" . elgg_view('output/confirmlink',array(
+	$delete_link = "<span class='delete_button'>" . elgg_view('output/confirmlink',array(
 				'href' => $delete_url,
 				'text' => elgg_echo("delete"),
 				'confirm' => elgg_echo("polls:label:deleteconfirm"),
 				)) . "</span>";
 
-	$edit .= "$edit_link $delete_link";
+	$edit .= "$delete_link";
 }
 
 // View to override
@@ -88,7 +88,7 @@ if ($vars['full']) { // Full view
 		</div>
 		</div>
 		$poll_container
-		<div class='polls_bottom'></div>
+		<div class='polls-bottom'></div>
 	</div>
 ___END;
 } else {// Listing

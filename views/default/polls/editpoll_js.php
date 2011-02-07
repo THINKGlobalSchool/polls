@@ -50,8 +50,8 @@
 		// Row HTML
 		var r = "";
 		r += "<tr id='" + id + "'>";
-		r += 	"<td><input type='text' name='" + counter + "' class='poll_input " + class + "'></input></td>";
-		r += 	"<td style='vertical-align: middle;'><div id='remove_row' class='remove_img' onmouseout='this.className=\"remove_img\"'  onmouseover='this.className=\"remove_img_over\"'></div></td>";
+		r += 	"<td><input type='text' name='" + counter + "' class='poll-input " + class + "'></input></td>";
+		r += 	"<td style='vertical-align: middle;'><div id='remove_row' class='remove-img' onmouseout='this.className=\"remove-img\"'  onmouseover='this.className=\"remove-img-over\"'></div></td>";
 		r += "</tr>";
 
 		// Incremement counter
@@ -113,13 +113,13 @@
 									$(this).attr("name", i)
 
 									// Zebra stripes
-									$(this).removeClass('poll_input alt');
-									var class = 'poll_input';
+									$(this).removeClass('poll-input alt');
+									var class = 'poll-input';
 									var alt = '';
 									if (i % 2 == 0)
 										alt += "alt";
 
-									$(this).addClass('poll_input '+alt);
+									$(this).addClass('poll-input '+alt);
 								}
 							}
 						);

@@ -64,7 +64,6 @@ function polls_get_page_content_view($guid) {
 		$return['content'] = elgg_view_entity($poll, true);
 		$return['layout'] = 'one_column_with_sidebar';
 	}
-
 	return $return;
 }
 

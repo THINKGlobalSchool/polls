@@ -46,6 +46,7 @@ $english = array(
 	'polls:label:complete' => 'Complete',
 	'polls:label:incomplete' => 'Incomplete',
 	'polls:label:grouppolls' => 'Group Polls',
+	'polls:label:results' => 'Detailed Results', 
 	
 	// River
 	'polls:river:poll:create' => '%s created a Poll titled %s',

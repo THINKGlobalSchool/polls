@@ -112,14 +112,14 @@ $remove = $vars['url'] . "mod/polls/graphics/minus.gif";
 $poll_label = elgg_echo('polls:label:options');
 
 // Build poll input form
-$poll_input = "<table class='poll_table' id='poll'>";
+$poll_input = "<table class='poll-table' id='poll'>";
 for ($i = 0; $i < $num_rows; $i++) {
 	$poll_input .= "<tr id='row" . $i . "'>";
-	$input_class = 'poll_input';
+	$input_class = 'poll-input';
 	$poll_input .= "<td>";
    	$poll_input .=  elgg_view('input/text', array('internalname' => (string)$i, 'value' => elgg_echo($contents[$i][$j]), 'class' => $input_class));
 	$poll_input .= "</td>";
-	$poll_input .= "<td style='vertical-align: middle;'><div id='remove_row' class='remove_img' onmouseout='this.className=\"remove_img\"'  onmouseover='this.className=\"remove_img_over\"'></div></td>";
+	$poll_input .= "<td style='vertical-align: middle;'><div id='remove_row' class='remove-img' onmouseout='this.className=\"remove-img\"'  onmouseover='this.className=\"remove-img-over\"'></div></td>";
 	$poll_input .= "</tr>";
 } 
 $poll_input .= "</table><br />";

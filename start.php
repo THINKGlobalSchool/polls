@@ -97,7 +97,7 @@ function polls_page_handler($page) {
 				echo elgg_view('polls/poll_results', array('entity' => $poll));
 			}
 			exit; // Ajax, don't load anything else
-		break;
+			break;
 		//case 'edit':
 		//	$params = polls_get_page_content_edit($page_type, $page[1]);
 		//	break;

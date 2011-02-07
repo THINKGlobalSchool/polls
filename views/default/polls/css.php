@@ -15,13 +15,12 @@
 	
 }
 
-.polls_bottom {
+.polls-bottom {
 	padding-bottom: 10px;
 	margin-bottom: 10px;
 	border-bottom: 1px dotted #CCCCCC;
 }
 
-/* Vote table */
 table.poll-vote {
 	margin-top: 15px;
 	margin-bottom: 15px;
@@ -47,7 +46,7 @@ table.poll-vote .poll-foot {
 }
 
 table.poll-vote td {
-padding: 4px;
+	padding: 4px;
 }
 
 table.poll-vote td.poll-title {
@@ -79,11 +78,20 @@ table.poll-vote td.option-count {
 	padding-right: 15px;
 }
 
+table.poll-vote div.poll-owner-content {
+	font-size: 80%;
+	border: 1px solid #999999;
+	background: #ffffff;
+	padding: 5px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
 form.polls-vote-form {
 	width: auto;
 }
 
-p.success_message {
+p.success-message {
 	font-size: 110%;
 	font-weight: bold;
 	margin-left: auto;
@@ -99,29 +107,26 @@ p.poll-error {
 	font-weight: bold;
 }
 
-
-
-/* Poll form CSS */
 table#poll {
 	width: 100%;
 }
 
-table#poll .poll_input {
+table#poll .poll-input {
 	width: 97%;
 	margin-bottom: 3px;
 }
 
-.poll_table a.remove_over {
+.poll-table a.remove_over {
 	opacity:1;
 	filter:alpha(opacity=100);
 }
 
-.poll_table a.remove {
+.poll-table a.remove {
 	opacity:0.2;
 	filter:alpha(opacity=20);
 }
 
-.poll_table .remove_img {
+.poll-table .remove-img {
 	opacity:0.2;
 	filter:alpha(opacity=20);
 	width: 20px;
@@ -130,7 +135,7 @@ table#poll .poll_input {
 	background-image: url("<?php echo elgg_get_site_url() . "mod/polls/graphics/minus.gif"; ?>");
 }
 
-.poll_table .remove_img_over {
+.poll-table .remove-img-over {
 	opacity:1;
 	filter:alpha(opacity=100);
 	width: 20px;
@@ -138,6 +143,7 @@ table#poll .poll_input {
 	background-color: #000000;
 	background-image: url("<?php echo elgg_get_site_url() . "mod/polls/graphics/minus.gif"; ?>");
 }
+
 
 /* Spinner */
 .poll-spinner {

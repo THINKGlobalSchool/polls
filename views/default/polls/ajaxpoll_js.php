@@ -46,7 +46,7 @@ $spinner = "<div class='poll-results-loading'><img src='" . elgg_get_site_url() 
 			var width = $("#poll-ajax-container-" + guid + "  .poll-vote").width();
 			$("#poll-ajax-container-" + guid).html('<table class="poll-spinner" style="width:' + width + 'px; height: ' + height + 'px;"><tr><td style="width: 100%; height: 100%; vertical-align: middle; text-align: center;"><img src="<?php echo elgg_get_site_url() . "_graphics/ajax_loader_bw.gif"; ?>" /></td></tr></table>');
 			$("#poll-ajax-container-" + guid).load("<?php echo $result_end_url; ?>" + guid, '', function() {
-				$("#poll-ajax-container-" + guid).prepend('<p class="success_message"><?php echo $success_message; ?></center>');
+				$("#poll-ajax-container-" + guid).prepend('<p class="success-message"><?php echo $success_message; ?></center>');
 			});
 		}
 	

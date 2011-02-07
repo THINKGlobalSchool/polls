@@ -10,6 +10,7 @@
  * 
  */
 
+
 $poll = $vars['entity'];
 
 // Only display if we haven't voted yet
@@ -30,16 +31,36 @@ foreach($options as $key => $option) {
 
 // Get options
 foreach($options as $key => $option) {
-	$count = count_annotations($poll->getGUID(), "object", "poll", (string)$key, (string)$key);
+	$annotations = get_annotations($poll->getGUID(), "object", "poll", (string)$key, (string)$key, 0, 99999);
+	
+	$owner_content = "";
+	// Owner content
+	if ($poll->canEdit() && $annotations && get_context() == "polls") {
+		$i = 0;
+		$owner_content = "<div class='poll-owner-content'>";
+		foreach ($annotations as $vote) {
+			$user = get_entity($vote->owner_guid);
+			$owner_content .= "<a href='{$user->getURL()}'>{$user->name}</a>";
+			$i++;
+			if (count($annotations) > 1 && $i != count($annotations)) {
+				$owner_content .= ', ';
+			}
+		}
+		$owner_content .= "</div>";
+	}
+	
+	$count = $annotations ? count($annotations) : 0;
 	$percent = round(($count / $total_count) * 100);
 	$content .= "<tr>";
-	$content .= "<td class='option-text'><label>$option</label></td>";
+	$content .= "<td class='option-text'><label>$option</label><br />$owner_content</td>";
 	$content .= "<td class='option-count'><label>$percent% ($count)</label></td>";
 	$content .= "</tr>";
+	
+
 }
 $content .= "<tr><td class='poll-foot' colspan='2'>&nbsp;</td></tr>";
 $content .= "</table>";
 
-echo $content;
+echo $content . $owner_content;
 
 ?>
