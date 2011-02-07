@@ -35,7 +35,7 @@ foreach($options as $key => $option) {
 	
 	$owner_content = "";
 	// Owner content
-	if ($poll->canEdit() && $annotations && get_context() == "polls") {
+	if ($poll->canEdit() && $annotations && get_context() == "polls-detailed") {
 		$i = 0;
 		$owner_content = "<div class='poll-owner-content'>";
 		foreach ($annotations as $vote) {

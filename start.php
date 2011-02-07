@@ -86,6 +86,7 @@ function polls_page_handler($page) {
 			$params = polls_get_page_content_friends($user->guid);
 			break;
 		case 'view': 
+			set_context('polls-detailed');
 			$params = polls_get_page_content_view($page[1]);
 			break;
 		case 'new':
