@@ -90,7 +90,7 @@ table.poll-vote div.poll-owner-content {
 	margin-top: 2px;
 	margin-bottom: 2px;
 	display: none;
-	max-width: 350px;
+	width: 350px;
 }
 
 table.poll-vote a.poll-show-link {
