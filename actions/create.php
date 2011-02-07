@@ -21,7 +21,8 @@ $container_guid = get_input('container_guid');
  
 // Get poll content
 for($i = 0; $i < $rows; $i++) {
-	$poll_content[$i] = get_input("$i");	
+	// New array will not be zero-based, but start at 1 due to how broken 0 based metanames are
+	$poll_content[$i+1] = get_input("$i");	
 }
 
 // Sticky form

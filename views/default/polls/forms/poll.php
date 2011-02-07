@@ -40,9 +40,8 @@ $form_body .= "<tr><td class='poll-title' colspan='3'>{$poll->title}</td></tr>";
 
 // Get options
 foreach($options as $key => $option) {
-	$number = $key + 1;
 	$form_body .= "<tr>";
-	$form_body .= "<td class='option-num'><label>$number. </label></td>";
+	$form_body .= "<td class='option-num'><label>$key. </label></td>";
 	$form_body .= "<td class='option-text'><label>$option</label></td>";
 	$form_body .= "<td class='option-input'><input name='poll_vote' value='$key' type='radio' /></td>";
 	$form_body .= "</tr>";
