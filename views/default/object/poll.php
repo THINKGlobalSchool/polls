@@ -10,114 +10,85 @@
  * 
  */
 
-// Get entity info
-$title = $vars['entity']->title;
-$owner = $vars['entity']->getOwnerEntity();
-$owner_poll_link = "<a href=\"".elgg_get_site_url()."pg/polls/$owner->username\">{$owner->name}</a>";
-$friendlytime = elgg_view_friendly_time($vars['entity']->time_created);
-$owner_text = elgg_echo('polls:label:posted_by', array($owner_poll_link)) . ' ' . $friendlytime;
-$address = $vars['entity']->getURL();
-$parsed_url = parse_url($address);
-$object_acl = elgg_view('output/access', array('entity' => $vars['entity']));
+$full = elgg_extract('full_view', $vars, FALSE);
+$poll = elgg_extract('entity', $vars, FALSE);
 
-// Comments
-$comments_count = elgg_count_comments($vars['entity']);
+if (!$poll) {
+	return true;
+}
 
-if ($comments_count != 0) { // only display if there are commments
-	$comments_link = " | <a href=\"{$vars['entity']->getURL()}#annotations\">" . elgg_echo("comments") . " (". $comments_count .")</a>";
-}else{
+$owner = $poll->getOwnerEntity();
+$owner_icon = elgg_view_entity_icon($owner, 'tiny');
+$container = $poll->getContainerEntity();
+$categories = elgg_view('output/categories', $vars);
+
+$owner_link = elgg_view('output/url', array(
+	'href' => "polls/owner/$owner->username",
+	'text' => $owner->name,
+));
+$author_text = elgg_echo('byline', array($owner_link));
+
+$tags = elgg_view('output/tags', array('tags' => $poll->tags));
+$date = elgg_view_friendly_time($poll->time_created);
+
+$comments_count = $poll->countComments();
+//only display if there are commments
+if ($comments_count != 0) {
+	$text = elgg_echo("comments") . " ($comments_count)";
+	$comments_link = elgg_view('output/url', array(
+		'href' => $poll->getURL() . '#comments',
+		'text' => $text,
+	));
+} else {
 	$comments_link = '';
 }
 
-// Edit/Delete
-$edit = $object_acl;	// Display access level
-if ($vars['entity']->canEdit()) {
-//	$edit_url = elgg_get_site_url()."pg/polls/edit/{$vars['entity']->getGUID()}/";
-//	$edit_link = "<span class='entity_edit'><a href=\"$edit_url\">" . elgg_echo('edit') . '</a></span>';
+$metadata = elgg_view_menu('entity', array(
+	'entity' => $vars['entity'],
+	'handler' => 'polls',
+	'sort_by' => 'priority',
+	'class' => 'elgg-menu-hz',
+));
 
-	$delete_url = "action/polls/delete?guid=" . $vars['entity']->guid;
-	$delete_link = "<span class='delete_button'>" . elgg_view('output/confirmlink',array(
-				'href' => $delete_url,
-				'text' => elgg_echo("delete"),
-				'confirm' => elgg_echo("polls:label:deleteconfirm"),
-				)) . "</span>";
+$subtitle = "$author_text $date $categories $comments_link";
 
-	$edit .= "$delete_link";
+// do not show the metadata and controls in widget view
+if (elgg_in_context('widgets')) {
+	$metadata = '';
 }
 
-// View to override
-$edit .= elgg_view("polls/options",array('entity' => $vars['entity']));
+if ($full && !elgg_in_context('gallery')) {
+	$header = elgg_view_title($poll->title);
 
-// Add favorites and likes
-$favorites .= elgg_view("favorites/form",array('entity' => $vars['entity']));
-$likes .= elgg_view_likes($vars['entity']); // include likes
+	$params = array(
+		'entity' => $poll,
+		'title' => false,
+		'metadata' => $metadata,
+		'subtitle' => $subtitle,
+		'tags' => $tags,
+	);
+	$list_body = elgg_view('page/components/summary', $params);
+	$poll_info = elgg_view_image_block($owner_icon, $list_body);
+	$poll = elgg_view_form('polls/vote', array(), $vars);
 
-// Tags
-$tags = elgg_view('output/tags', array('tags' => $vars['entity']->tags));
-if (!empty($tags)) {
-	$tags = '<p class="tags">' . $tags . '</p>';
-}
-
-
-if ($vars['full']) { // Full view
-	// Owner Icon 
-	$owner_icon = elgg_view('profile/icon', array('entity' => $owner, 'size' => 'tiny'));
-	$poll_container = elgg_view('polls/poll_container', $vars);
-	
-	// Display content
-	echo <<<___END
-	<div class="polls clearfix">
-		<div id="content_header" class="clearfix">
-		</div>
-		<div class="clearfix">
-		<div class="entity_listing_icon">
-			$owner_icon
-		</div>
-		<div class="entity_listing_info">
-			<div class="entity_metadata">
-				$edit 
-				$favorites 
-				$likes
-			</div>
-			<p class="entity_subtext">
-				$owner_text
-				$date
-				$comments_link
-			</p>
-			$tags
-		</div>
-		</div>
-		$poll_container
-		<div class='polls-bottom'></div>
-	</div>
-___END;
-} else {// Listing
-	
-	$icon = elgg_view("profile/icon", array('entity' => $owner,'size' => 'tiny',));
-	
-	// View description pop-down
-	if ($vars['entity']->description != '') {
-		$view_desc = "| <a class='link' onclick=\"elgg_slide_toggle(this,'.entity_listing','.note');\">" . elgg_echo('description') . "</a>";
-		$description = "<div class='note hidden'>". $vars['entity']->description . "</div>";	
-	} 
-		
-	$info = <<<___END
-	<div class='entity_metadata'>
-		$edit 
-		$favorites 
-		$likes
-	</div>
-	<p class='entity_title'>
-		<a  href="$address">$title</a>
-	</p>
-	<p class='entity_subtext'>
-		$owner_text
-		$date
-		$view_desc
-		$comments_link
-	</p>
-	$tags
+	echo <<<HTML
+$header
+$poll_info
+<div class="elgg-polls-container elgg-content mts">
+	$poll
 	$description
-___END;
-	echo "<div class='polls'>" . elgg_view_listing($icon, $info) . "</div>";
+</div>
+HTML;
+
+} else {
+	$params = array(
+		'entity' => $poll,
+		'metadata' => $metadata,
+		'subtitle' => $subtitle,
+		'tags' => $tags,
+		'content' => $content,
+	);
+
+	$body .= elgg_view('page/components/summary', $params);
+	echo elgg_view_image_block($owner_icon, $body);
 }

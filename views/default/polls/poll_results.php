@@ -10,70 +10,108 @@
  * 
  */
 
-
 $poll = $vars['entity'];
 
-// Only display if we haven't voted yet
+if (!elgg_instanceof($poll, 'object', 'poll')) {
+	echo elgg_echo('polls:error:notfound');
+	return true;
+}
+
+// Only display if we've already voted
 if (!has_user_completed_poll(get_loggedin_user(), $poll)) {
-	echo elgg_view('polls/forms/poll', $vars);
-	return;
+	echo elgg_view_form('polls/vote', array(), $vars);
+	return true;
 } 
 
 $options = unserialize($poll->poll_content);
-$content .= "<table class='poll-vote'>";
-$content .= "<tr><td class='poll-title' colspan='2'>{$poll->title}</td></tr>";
+$content .= "<table class='elgg-polls-vote'>";
+$content .= "<tr><td class='elgg-polls-title' colspan='3'>{$poll->title}</td></tr>";
 
 // Count total votes
 $total_count = 0;
+$option_counts = array();
 foreach($options as $key => $option) {
-	$total_count += count_annotations($poll->getGUID(), "object", "poll", (string)$key, (string)$key);
+	 $option_count = (int) elgg_get_annotations(array(
+		'guid' => $poll->getGUID(),
+		'annotation_name' => (string)$key,
+		'annotation_value' => (string)$key,
+		'count' => true
+	));
+
+	 $option_counts[$key] = $option_count;
+	 $total_count += $option_count;
 }
 
 // Get options
 foreach($options as $key => $option) {
-	$annotations = get_annotations($poll->getGUID(), "object", "poll", (string)$key, (string)$key, 0, 99999);
-	
 	$owner_content = "";
-	// Owner content
-	if ($poll->canEdit() && $annotations) {
+	$selected = '<input type="radio" disabled="disabled" />';
+	
+	if (elgg_is_logged_in()) {
+		$my_vote =  elgg_get_annotations(array(
+			'guid' => $poll->getGUID(),
+			'annotation_name' => (string)$key,
+			'annotation_value' => (string)$key,
+			'annotation_owner_guid' => elgg_get_logged_in_user_guid()
+		));
+
+		if ($my_vote) {
+			$selected = '<input type="radio" checked="checked" disabled="disabled" />';
+		}
+	}
+
+	// show result details if you can edit
+	if ($poll->canEdit() && $total_count) {
 		$i = 0;
-		$box_id = "poll-details-{$poll->getGUID()}";
-		$owner_content .= "<div class='$box_id poll-owner-content'>";
+		$voted_users_html = array();
+
+		$options = array(
+			'guid' => $poll->getGUID(),
+			'annotation_name' => (string)$key,
+			'annotation_value' => (string)$key,
+			'limit' => 0
+		);
+
+		$annotations = new ElggBatch('elgg_get_annotations', $options);
+
 		foreach ($annotations as $vote) {
 			$user = get_entity($vote->owner_guid);
-			$owner_content .= "<a href='{$user->getURL()}'>{$user->name}</a>";
+			$voted_users_html[] = "<a href='{$user->getURL()}'>{$user->name}</a>";
 			$i++;
-			if (count($annotations) > 1 && $i != count($annotations)) {
-				$owner_content .= ', ';
-			}
 		}
-		$owner_content .= "</div>";
+
+		// only show for options with results
+		if ($i > 0) {
+			$toggler_class = "elgg-polls-details-{$poll->getGUID()}";
+
+			$owner_content = "<div class='$toggler_class elgg-polls-owner-content'>";
+			$owner_content .= implode(', ', $voted_users_html);
+			$owner_content .= "</div>";
+		}
 	}
 	
-	$count = $annotations ? count($annotations) : 0;
+	$count = $option_counts[$key];
 	$percent = round(($count / $total_count) * 100);
+
 	$content .= "<tr>";
-	$content .= "<td class='option-text'><label>$option</label><br />$owner_content</td>";
-	$content .= "<td class='option-count'><label>$percent% ($count)</label></td>";
+	$content .= "<td class='elgg-polls-option-text'><label>$option</label><br />$owner_content</td>";
+	$content .= "<td class='elgg-polls-option-count'><label>$percent% ($count)</label></td>";
+	$content .= "<td class='elgg-polls-option-num'>$selected</td>";
 	$content .= "</tr>";
+}
+
+$show_results = elgg_echo('polls:label:showresults');
+
+if ($poll->canEdit() && $total_count) {
+	$content .= <<<___HTML
+	<tr>
+		<td class='elgg-polls-foot' colspan='2'>
+			<a class='elgg-toggler' href='.$toggler_class'>$show_results</a>
+		</td>
+	</tr>
+___HTML;
+}
 	
+$content .= '</table>';
 
-}
-$content .= "<tr><td class='poll-foot' colspan='2'><a class='poll-show-link' onclick='javascript:toggle_poll_details(\"$box_id\");'>" . elgg_echo('polls:label:showresults') . "</a></td></tr>";
-$content .= "</table>";
-
-// Add script if we're the owner
-if ($poll->canEdit()) {
-	$script = <<<EOT
-		<script type='text/javascript'>
-			function toggle_poll_details(id) {
-				$('.' + id).toggle('fast');
-				return false;
-			}
-		</script>
-EOT;
-}
-
-echo $content . $owner_content . $script;
-
-?>
+echo $content;

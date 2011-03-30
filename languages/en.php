@@ -15,7 +15,7 @@ $english = array(
 	'poll' => 'Polls',
 	'polls' => 'Polls',
 	'item:object:poll' => 'Polls',
-	'poll:new' => 'New Poll',
+	'polls:add' => 'New Poll',
 	
 	// Page titles 
 	'polls:title:allpolls' => 'All Polls',
@@ -41,7 +41,7 @@ $english = array(
 	'polls:label:deleteconfirm' => 'Are you sure you want to delete this poll?',
 	'polls:label:posted_by' => 'Posted by %s',
 	'polls:label:options' => 'Poll Options',
-	'polls:label:addoption' => 'Add Option',
+	'polls:label:add_option' => 'Add Option',
 	'polls:label:vote' => 'Submit',
 	'polls:label:complete' => 'Complete',
 	'polls:label:incomplete' => 'Incomplete',
@@ -54,10 +54,12 @@ $english = array(
 		
 	// Messages
 	'polls:error:notfound' => 'Poll not found',
-	'polls:error:titlerequired' => 'Poll title is required',
+	'polls:error:missing_fields' => 'You must enter a title and some options.',
 	'polls:error:save' => 'There was an error saving the poll',
 	'polls:error:delete' => 'There was an error deleting the poll',
 	'polls:error:vote' => 'There was an error voting!',
+	'polls:error:already_voted' => 'You have already voted in this poll',
+	'polls:error:no_vote' => 'You must pick an option',
 	'polls:success:delete' => 'Poll deleted successfully!',
 	'polls:success:save' => 'Poll saved successfully!',
 	'polls:success:vote' => 'Thanks for voting!',
@@ -68,5 +70,3 @@ $english = array(
 );
 
 add_translation('en',$english);
-
-?>

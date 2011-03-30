@@ -7,11 +7,33 @@
  * @author Jeff Tilson
  * @copyright THINK Global School 2011
  * @link http://www.thinkglobalschool.com/
+ *
+ *
+ * @todo The model for the voting is a bit strange.  This is the current model:
+ *	An annotation is created on the poll object with
+ *		name		=	(int) $poll_option
+ *		value		=	(int) $poll_option
+ *		owner_guid	=	voting user guid
  * 
+ *	A relationship is created between the poll object and the user with
+ *		guid_one		=	voting user guid
+ *		relationship	=	HAS_VOTED_RELATIONSHIP
+ *		guid_two		=	poll
+ *
+ * Suggested model:
+ *	Annotation created on the poll object with
+ *		name		=	'vote'
+ *		value		=	(int) $poll_option
+ *		owner_guid	=	voting user guid
+ *
+ *	Relationships are unncessary. You can check if a user has voted by checking if an annotation
+ *	exists on the poll named 'vote' owned by that user.  This would require an upgrade to be run
+ *	that found all the poll objects and updated the annotation names on them to be "vote".
+ *
+ * @todo Description is accepted but doesn't seem to be used anywhere.
  */
 
 function polls_init() {
-	global $CONFIG;
 	
 	// Constant for voted relationship
 	define('HAS_VOTED_RELATIONSHIP', 'has_voted_for');
@@ -20,78 +42,160 @@ function polls_init() {
 	require_once 'lib/polls_lib.php';
 			
 	// Extend CSS
-	elgg_extend_view('css/screen','polls/css');
+	elgg_extend_view('css/elgg','polls/css');
 	
 	// Add in the JS
-	elgg_extend_view('metatags', 'polls/ajaxpoll_js');
+	elgg_extend_view('js/elgg', 'js/polls');
 	
 	// Add poll sidebar
-	elgg_extend_view('group-extender/sidebar','polls/group_polls', 2);
+	// @todo - don't know what this is...looks theme-specific
+	elgg_extend_view('group-extender/sidebar', 'polls/group_polls', 2);
 	
 	// Page handler
-	register_page_handler('polls','polls_page_handler');
+	register_page_handler('polls', 'polls_page_handler');
 
-	// Add to tools menu
-	add_menu(elgg_echo("polls"), $CONFIG->wwwroot . 'pg/polls');
+	// Add menus
+	// site menu for main tabs
+	elgg_register_menu_item('site', array(
+		'name' => 'polls',
+		'text' => elgg_echo('polls'),
+		'href' => 'pg/polls'
+	));
 
-	// Add submenus
-	elgg_register_event_handler('pagesetup','system','polls_submenus');
+	// secondary tab filter menu for incomplete / complete polls
+	elgg_register_menu_item('polls-status', array(
+		'name' => 'incomplete',
+		'text' => elgg_echo('polls:label:incomplete'),
+		'href' => elgg_http_add_url_query_elements(current_page_url(), array('polls_status' => 'incomplete')),
+		'selected' => (get_input('polls_status', 'incomplete') == 'incomplete'),
+		'priority' => 1
+	));
+
+	elgg_register_menu_item('polls-status', array(
+		'name' => 'complete',
+		'text' => elgg_echo('polls:label:complete'),
+		'href' => elgg_http_add_url_query_elements(current_page_url(), array('polls_status' => 'complete')),
+		'selected' => (get_input('polls_status', 'incomplete') == 'complete'),
+		'priority' => 2
+	));
+
+	// @todo This is used almost exclusively in the profile page now. Do you mean user_hover?
+	elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'polls_owner_block_menu_setup');
+	elgg_register_plugin_hook_handler('prepare', 'menu:entity', 'polls_remove_entity_edit_link');
+
 	
 	// add the group pages tool option     
-    add_group_tool_option('polls',elgg_echo('groups:enablepolls'),true);
+    add_group_tool_option('polls', elgg_echo('groups:enablepolls'), true);
 					
 	// Register actions
-	elgg_register_action('polls/create', $CONFIG->pluginspath . 'polls/actions/create.php');
-	elgg_register_action('polls/vote', $CONFIG->pluginspath . 'polls/actions/vote.php');
-	elgg_register_action('polls/delete', $CONFIG->pluginspath . 'polls/actions/delete.php');
+	$action_path = dirname(__FILE__) . '/actions/polls';
+	elgg_register_action('polls/save', "$action_path/save.php");
+	elgg_register_action('polls/vote', "$action_path/vote.php");
+	elgg_register_action('polls/delete', "$action_path/delete.php");
 	
 	// Setup url handler for polls
-	register_entity_url_handler('polls_url_handler','object', 'poll');
+	register_entity_url_handler('polls_url_handler', 'object', 'poll');
 	
 	// Comment handler
 	elgg_register_plugin_hook_handler('entity:annotate', 'object', 'poll_annotate_comments');
 	
-	// Profile hook	
-	elgg_register_plugin_hook_handler('profile_menu', 'profile', 'polls_profile_menu');
-	
-	// Register type
+	// Register type for search
 	register_entity_type('object', 'poll');		
 
 	return true;
-	
 }
 
-/* Polls page handler */
+/**
+ * Dispatcher for polls.
+ *
+ * URLs take the form of
+ *  All polls:        polls/all
+ *  User's polls:     polls/owner/<username>
+ *  Friends' polls:   polls/friends/<username>
+ *  View poll:        polls/view/<guid>/<title>
+ *  New poll:         polls/add/<guid> (container: user, group, parent)
+ *  Edit poll:        polls/edit/<guid>
+ *  Group polls:      polls/group/<guid>/owner
+ *
+ * Title is ignored
+ *
+ * @param array $page
+ */
 function polls_page_handler($page) {
-	global $CONFIG;
-	set_context('polls');
 	gatekeeper();
+	// @TODO something better
+	elgg_push_breadcrumb(elgg_echo('polls'), 'polls/all');
+	elgg_push_context('polls');
 
-	elgg_push_breadcrumb(elgg_echo('polls'), "pg/polls"); // @TODO something better
+	$pages = dirname(__FILE__) . '/pages/polls';
 	
-	// Following the core blogs plugin page handler
 	if (!isset($page[0])) {
 		$page[0] = 'all';
 	}
+
+	switch ($page[0]) {
+		case "owner":
+			include "$pages/owner.php";
+			break;
+
+		case "friends":
+			include "$pages/friends.php";
+			break;
+
+		case "view":
+			set_input('guid', $page[1]);
+			include "$pages/view.php";
+			break;
+
+		case "add":
+			include "$pages/add.php";
+			break;
+
+		// can't edit polls
+//		case "edit":
+//			set_input('guid', $page[1]);
+//			include "$pages/edit.php";
+//			break;
+
+		case 'group':
+			group_gatekeeper();
+			include "$pages/owner.php";
+			break;
+
+		case 'all':
+		default:
+			include "$pages/all.php";
+			break;
+	}
+
+	elgg_pop_context();
+
+	return true;
 	
-	$page_type = $page[0];
+	
 	
 	switch ($page_type) {
 		case 'owner':
 			$user = get_user_by_username($page[1]);
 			$params = polls_get_page_content_list($user->guid);
 			break;
+
 		case 'friends': 
 			$user = get_user_by_username($page[1]);
 			$params = polls_get_page_content_friends($user->guid);
 			break;
+		
 		case 'view': 
 			set_context('polls-detailed');
 			$params = polls_get_page_content_view($page[1]);
 			break;
+
 		case 'new':
+			// backward compatibility
+		case 'add':
 			$params = polls_get_page_content_edit($page_type, $page[1]);
 			break;
+
 		case 'ajax_result':
 			$poll = get_entity($page[1]);
 			if ($poll) {
@@ -99,44 +203,22 @@ function polls_page_handler($page) {
 			}
 			exit; // Ajax, don't load anything else
 			break;
-		//case 'edit':
-		//	$params = polls_get_page_content_edit($page_type, $page[1]);
-		//	break;
+
 		case 'group':
 			$params = polls_get_page_content_list($page[1]);
 			break;
+
 		case 'all':
 		default:
 			$params = polls_get_page_content_list();
 			break;
 	}
 
-	$params['sidebar'] .= isset($params['sidebar']) ? $params['sidebar'] : '';
-	$params['content'] = elgg_view('navigation/breadcrumbs') . $params['content'];
-
 	$body = elgg_view_layout($params['layout'], $params);
 
 	echo elgg_view_page($params['title'], $body);
 }
-	
-/**
- * Setup polls submenus
- */
-function polls_submenus() {
-	global $CONFIG;
 
-	// all/yours/friends 
-	elgg_add_submenu_item(array('text' => elgg_echo('polls:menu:yourpolls'), 
-								'href' => elgg_get_site_url() . 'pg/polls/' . get_loggedin_user()->username), 'polls');
-								
-	elgg_add_submenu_item(array('text' => elgg_echo('polls:menu:friendspolls'), 
-								'href' => elgg_get_site_url() . 'pg/polls/friends' ), 'polls');
-
-	elgg_add_submenu_item(array('text' => elgg_echo('polls:menu:allpolls'), 
-								'href' => elgg_get_site_url() . 'pg/polls/' ), 'polls');
-	
-}
-	
 /**
  * Populates the ->getUrl() method for a poll
  *
@@ -174,25 +256,47 @@ function poll_annotate_comments($hook, $entity_type, $returnvalue, $params) {
 }
 
 /**
- * Plugin hook to add polls's to users profile block
- * 	
+ * Add a user hover menu for polls
+ *
  * @param unknown_type $hook
- * @param unknown_type $entity_type
- * @param unknown_type $returnvalue
+ * @param unknown_type $type
+ * @param unknown_type $return
  * @param unknown_type $params
- * @return unknown
  */
-function polls_profile_menu($hook, $entity_type, $return_value, $params) {
+function polls_owner_block_menu_setup($hook, $type, $return, $params) {
+	$owner = $params['entity'];
+	
 	// Only display todo link for users or groups with enabled todos
-	if ($params['owner'] instanceof ElggUser || $params['owner']->polls_enable == 'yes') {
-		$return_value[] = array(
-			'text' => elgg_echo('poll'),
-			'href' => elgg_get_site_url() . "pg/polls/group/{$params['owner']->getGUID()}/owner",
-		);
+	if ($owner instanceof ElggUser || $user->polls_enable == 'yes') {
+		$title = elgg_echo('poll');
+		$url = "pg/polls/group/{$owner->getGUID()}/owner";
+		$return[] = new ElggMenuItem('polls', $title, $url);
 	}
 
-	return $return_value;
+	return $return;
+}
+
+/**
+ * Remove the edit menu item from polls because you can't edit them.
+ *
+ * @param unknown_type $hook
+ * @param unknown_type $type
+ * @param unknown_type $return
+ * @param unknown_type $params
+ */
+function polls_remove_entity_edit_link($hook, $type, $return, $params) {
+	$entity = $params['entity'];
+
+	// don't display edit link for polls
+	if (elgg_instanceof($entity, 'object', 'poll')) {
+		foreach ($return['default'] as $i => $menu) {
+			if ($menu->getName() == 'edit') {
+				unset ($return['default'][$i]);
+			}
+		}
+	}
+
+	return $return;
 }
 
 register_elgg_event_handler('init', 'system', 'polls_init');
-?>

@@ -10,6 +10,7 @@
  * 
  */
 
+//@todo Fix
 
 $performed_by = get_entity($vars['item']->subject_guid);
 $object = get_entity($vars['item']->object_guid);

@@ -9,29 +9,34 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
-gatekeeper();
+
+// start a new sticky form session in case of failure
+elgg_make_sticky_form('poll');
 
 // Get inputs
-$title = get_input('poll_title');
-$description = get_input('poll_description');
-$tags = string_to_tag_array(get_input('poll_tags'));
-$access = get_input('poll_access');
+$title = get_input('title');
+$description = get_input('description');
+$tags = string_to_tag_array(get_input('tags', array()));
+$access = get_input('access_id');
 $rows = get_input('num_rows');
 $container_guid = get_input('container_guid');
- 
-// Get poll content
-for($i = 0; $i < $rows; $i++) {
-	// New array will not be zero-based, but start at 1 due to how broken 0 based metanames are
-	$poll_content[$i+1] = get_input("$i");	
+$options = get_input('options', array());
+
+// index starts at 1 because 0 as a metadata name is icky.
+// surely there's a nicer way to do this?
+$poll_content = array();
+$i = 1;
+foreach ($options as $option) {
+	if ($option) {
+		$poll_content[$i] = $option;
+		$i++;
+	}
 }
 
-// Sticky form
-elgg_make_sticky_form('polls_save_form');
-if (!$title) {
-	register_error(elgg_echo('polls:error:titlerequired'));
-	forward(elgg_get_site_url() . 'pg/polls/search#' . $search);
+if (!$title || !$poll_content) {
+	register_error(elgg_echo('polls:error:missing_fields'));
+	forward(REFERRER);
 }
-
 
 $poll = new ElggObject();
 $poll->subtype = 'poll';
@@ -48,8 +53,7 @@ if (!$poll->save()) {
 	forward(REFERER);
 }
 
-// Clear sticky form
-elgg_clear_sticky_form('polls_save_form');
+elgg_clear_sticky_form('poll');
 
 // Add to river
 add_to_river('river/object/poll/create', 'create', get_loggedin_userid(), $poll->getGUID());
@@ -57,6 +61,3 @@ add_to_river('river/object/poll/create', 'create', get_loggedin_userid(), $poll-
 // Forward on
 system_message(elgg_echo('polls:success:save'));
 forward($poll->getURL());
-
-
-?>

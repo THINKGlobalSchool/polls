@@ -10,44 +10,6 @@
  * 
  */
 
-/* Get edit/create content */
-function polls_get_page_content_edit($page_type, $guid) {
-	$vars = array();
-	if ($page_type == 'edit') {
-		$title = elgg_echo('polls:title:edit');
-		$poll = get_entity((int)$guid);
-
-		if (elgg_instanceof($poll, 'object', 'poll') && $poll->canEdit()) {
-			$vars['entity'] = $poll;
-
-			elgg_push_breadcrumb($poll->title, $poll->getURL());
-			elgg_push_breadcrumb(elgg_echo('edit'));
-
-			$content = elgg_view_title($title) . elgg_view('polls/forms/edit', $vars);
-	
-		} else {
-			$content = elgg_echo('polls:error:notfound');
-		}
-		
-	
-	} else {
-		$title = elgg_echo('polls:title:new');
-		if (!$guid) {
-			$container = get_loggedin_user();
-		} else {
-			$container = get_entity($guid);
-		}
-		elgg_set_page_owner_guid($container->guid);
-		
-		elgg_push_breadcrumb(elgg_echo('polls:label:new'));
-		
-		$content = elgg_view_title($title) . elgg_view('polls/forms/edit', $vars);
-	}
-
-
-	return array('content' => $content, 'title' => $title, 'layout' => 'one_column_with_sidebar');
-}
-
 /* View a poll  */
 function polls_get_page_content_view($guid) {
 	$poll = get_entity($guid);
@@ -68,16 +30,12 @@ function polls_get_page_content_view($guid) {
 }
 
 /**
- * Get page components to list a user's or all polls
+ * Get the entities to show for based upon the filters
  *
  * @param int $owner_guid The GUID of the page owner or NULL for all polls
  * @return array
  */
 function polls_get_page_content_list($container_guid = NULL) {
-
-	$return = array();
-	$return['layout'] = 'one_column_with_sidebar'; // @TODO Temporary.. until we're up to latest code level
-
 	$options = array(
 		'type' => 'object',
 		'subtype' => 'poll',
@@ -85,93 +43,41 @@ function polls_get_page_content_list($container_guid = NULL) {
 		'limit' => 10
 	);
 
-	$loggedin_userid = get_loggedin_userid();
 	if ($container_guid) {
 		$options['container_guid'] = $container_guid;
-		$container = get_entity($container_guid);
-		if (!$container) {
-
-		}
-		$return['title'] = elgg_echo('polls:title:userpolls', array($container->name));
-		elgg_set_page_owner_guid($container_guid);
-
-		$crumbs_title = elgg_echo('polls:title:ownedpoll', array($container->name));
-		elgg_push_breadcrumb($crumbs_title);
-
-		if ($container_guid == $loggedin_userid) {
-			$return['filter_context'] = 'mine';
-		} 
-
-		/*Groups..
-		if (elgg_instanceof($container, 'group')) {
-			$return['filter'] = '';
-			if ($container->isMember(get_loggedin_user())) {
-				$url = "pg/polls/new/$container->guid";
-				$params = array(
-					'href' => $url,
-					'text' => elgg_echo("polls:new"),
-					'class' => 'elgg-action-button',
-				);
-				$buttons = elgg_view('output/url', $params);
-				$return['buttons'] = $buttons;
-			}
-		}*/
-		
-	} else {
-		$return['filter_context'] = 'everyone';
-		$return['title'] = elgg_echo('polls:title:allpolls');
-	}
-	
-	// Get latest poll for display
-	$latest = polls_get_latest_poll_content();
-	
-	$header = elgg_view('page_elements/content_header', array(
-		'context' => $return['filter_context'],
-		'type' => 'poll',
-		'all_link' => elgg_get_site_url() . "pg/polls",
-		'mine_link' => elgg_get_site_url() . "pg/polls/owner/" . get_loggedin_user()->username,
-		'friend_link' => elgg_get_site_url() . "pg/polls/friends/" . get_loggedin_user()->username,
-		'new_link' => elgg_get_site_url() . "pg/polls/new/" . $container_guid,
-	));
-	
-	// Complete/Incomplete menu
-	$header .= elgg_view('polls/nav_show_by_complete', array('return_url' => 'pg/polls'));
-	
-	if ($container_guid && ($container_guid != $loggedin_userid)) {
-		if (elgg_instanceof($container, 'group') && $container->isMember(get_loggedin_user())) {
-			// Get latest group poll for display
-			$latest = polls_get_latest_poll_content($container_guid);
-			$url = "pg/polls/new/$container->guid";
-			$header = elgg_view('page_elements/content_header', array('type' => 'poll', 'new_link' => $url));
-		} else {
-			// do not show content header when viewing other users' posts
-			$header = elgg_view('page_elements/content_header_member', array('type' => 'poll'));
-		}	
 	}
 
-	// Check status.. 
-	if (get_input('status') == 'complete') {
+	// Check status..
+	// incomplete means "logged in user hasn't voted"
+	if (get_input('polls_status', 'incomplete') == 'complete') {
 		$options['relationship'] = HAS_VOTED_RELATIONSHIP;
-		$options['relationship_guid'] = get_loggedin_userid(); 
+		$options['relationship_guid'] = elgg_get_logged_in_user_guid();
 		$options['inverse_relationship'] = FALSE;
 		// Nice and easy here, just grab entities with the voted relationship
 		$list = elgg_list_entities_from_relationship($options);
 	} else {
 		$options['pagination'] = TRUE;
+		$db_prefix = elgg_get_config('dbprefix');
+
+		// if the user hasn't voted, this relationship doesn't exist.
+		$options['wheres'] = array(
+			"(NOT EXISTS (
+			SELECT 1 FROM {$db_prefix}entity_relationships polls_er
+			WHERE
+				polls_er.guid_one = '" . elgg_get_logged_in_user_guid() . "'
+				AND polls_er.relationship = '" . HAS_VOTED_RELATIONSHIP . "'
+				AND polls_er.guid_two = e.guid))"
+		);
 		// Little funky, registering my own function to grab incomplete polls
 		// since theres not such thing as 'elgg_list_entities_WITHOUT_relationship'
-		$list = polls_list_incomplete($options);
+		$list = elgg_list_entities($options);
 	}
 
 	if (!$list) {
-		$return['content'] = elgg_view('polls/noresults');
-	} else {
-		$return['content'] = $list;
+		$list = elgg_view('polls/noresults');
 	}
 	
-	$return['content'] = $latest . $header . $return['content'];
-
-	return $return;
+	return $list;
 }
 
 /**
@@ -247,47 +153,11 @@ function polls_get_latest_poll_content($container_guid = ELGG_ENTITIES_ANY_VALUE
 		'container_guid' => $container_guid
 	));
 	
-	if($latest_poll[0]) {
-		$content = elgg_view_title(elgg_echo('polls:title:latest'));
-		$content .= elgg_view('polls/poll_container', array('entity' => $latest_poll[0]));
+	if ($latest_poll[0]) {
+		return elgg_view_entity($latest_poll[0], array('full_view' => true));
+	} else {
+		return '';
 	}
-	
-	return $content;
-}
-
-/**
- * Helper function to grab and filter out incomplete polls
- * @return array
- */
-function polls_list_incomplete($options) {
-	// Going to do some hacking.. 
-	$offset = get_input('offset');
-
-	// Store limit, and set to 0
-	$limit = $options['limit'];
-	$options['limit'] = 0;
-	
-	// Grab entities
-	$entities = elgg_get_entities($options);
-	
-	// Remove completed
-	foreach($entities as $key => $entity) {
-		if (has_user_completed_poll(get_loggedin_user(), $entity)) {
-			unset($entities[$key]);
-		}
-	}
-	
-	// Hack it all back together
-	$return = elgg_view_entity_list(
-		array_slice($entities, $offset, $limit), // Note to self, array_slice is awesome
-		count($entities), 
-		$offset,
-		$limit, 
-		$options['full_view'], 
-		$options['view_type_toggle'], 
-		$options['pagination']
-	);	
-	return $return;
 }
 
 /**
@@ -297,4 +167,44 @@ function has_user_completed_poll($user, $poll) {
 	return check_entity_relationship($user->getGUID(), HAS_VOTED_RELATIONSHIP, $poll->getGUID());
 }
 
-?>
+/**
+ * Prepare the add/edit form variables
+ *
+ * @param ElggObject $object An object to base the values on.
+ * @return array
+ */
+function polls_prepare_form_vars($object = null) {
+	// input names => defaults
+	$values = array(
+		'title' => get_input('title', ''),
+		'description' => '',
+		'access_id' => ACCESS_DEFAULT,
+		'tags' => '',
+		'container_guid' => elgg_get_page_owner_guid(),
+		'guid' => null,
+		// entity is added later
+	);
+
+	if ($object) {
+		foreach (array_keys($values) as $field) {
+			if (isset($object->$field)) {
+				$values[$field] = $object->$field;
+			}
+		}
+	}
+
+	if (elgg_is_sticky_form('poll')) {
+		$sticky_values = elgg_get_sticky_values('poll');
+		foreach ($sticky_values as $key => $value) {
+			$values[$key] = $value;
+		}
+	}
+
+	if ($object) {
+		$values['entity'] = $object;
+	}
+
+	elgg_clear_sticky_form('poll');
+
+	return $values;
+}
