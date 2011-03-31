@@ -69,14 +69,13 @@ if ($full && !elgg_in_context('gallery')) {
 	);
 	$list_body = elgg_view('page/components/summary', $params);
 	$poll_info = elgg_view_image_block($owner_icon, $list_body);
-	$poll = elgg_view_form('polls/vote', array(), $vars);
+	$poll = elgg_view('polls/poll_container', $vars);
 
 	echo <<<HTML
 $header
 $poll_info
-<div class="elgg-polls-container elgg-content mts">
+<div class="elgg-content mts">
 	$poll
-	$description
 </div>
 HTML;
 

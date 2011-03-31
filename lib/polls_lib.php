@@ -143,6 +143,8 @@ function polls_get_page_content_friends($user_guid) {
 
 /**
  * Helper function to grab and display the latest poll
+ *
+ * @param mixed $container_guid The container_guid to get for
  * @return html
  */
 function polls_get_latest_poll_content($container_guid = ELGG_ENTITIES_ANY_VALUE) {	

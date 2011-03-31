@@ -87,7 +87,7 @@ $poll_input .= elgg_view('output/url', array(
 
 $polls_save_input = elgg_view('input/submit', array(
 	'name' => 'save_input',
-	'class' => 'elgg-polls-add',
+	'class' => 'elgg-polls-add elgg-button-submit',
 	'value' => elgg_echo('polls:label:save')
 ));
 

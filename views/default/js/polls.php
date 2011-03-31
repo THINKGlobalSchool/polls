@@ -15,8 +15,6 @@ elgg.polls.init = function() {
 
 	// vote button
 	$('input[type=submit].elgg-polls-vote').live('click', elgg.polls.submitVote);
-
-	// toggle stats button
 };
 
 /**
@@ -66,7 +64,8 @@ elgg.polls.submitVote = function(e) {
 			if (json.status < 0) {
 				$container.html(oldHTML);
 			} else {
-				$container.html($(json.output)).prepend('<h3 class="center">' + elgg.echo('polls:success:vote') + '</h3>');
+				$container.html($(json.output)).prepend('<h3 class="center hidden">' + elgg.echo('polls:success:vote') + '</h3>');
+				$container.find('h3:first').slideDown();
 			}
 		}
 	});

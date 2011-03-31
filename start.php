@@ -31,6 +31,8 @@
  *	that found all the poll objects and updated the annotation names on them to be "vote".
  *
  * @todo Description is accepted but doesn't seem to be used anywhere.
+ *
+ * @todo The owner has to vote before he can see the results.
  */
 
 function polls_init() {

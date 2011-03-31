@@ -11,6 +11,10 @@
  */
 ?>
 
+.elgg-river-item form.elgg-polls-vote {
+	display: inline;
+	background-color: transparent;
+}
 
 ul.elgg-polls-options li input[type=text] {
 	width: 95%;
@@ -127,56 +131,6 @@ p.elgg-polls-error {
 	font-weight: bold;
 }
 
-table#poll {
-	width: 100%;
-}
-
-table#poll .elgg-polls-input {
-	width: 97%;
-	margin-bottom: 3px;
-}
-
-.elgg-polls-table a.remove_over {
-	opacity:1;
-	filter:alpha(opacity=100);
-}
-
-.elgg-polls-table a.remove {
-	opacity:0.2;
-	filter:alpha(opacity=20);
-}
-
-.elgg-polls-table .remove-img {
-	opacity:0.2;
-	filter:alpha(opacity=20);
-	width: 20px;
-	height: 20px;
-	background-color: #000000;
-	background-image: url("<?php echo elgg_get_site_url() . "mod/polls/graphics/minus.gif"; ?>");
-}
-
-.elgg-polls-table .remove-img-over {
-	opacity:1;
-	filter:alpha(opacity=100);
-	width: 20px;
-	height: 20px;
-	background-color: #000000;
-	background-image: url("<?php echo elgg_get_site_url() . "mod/polls/graphics/minus.gif"; ?>");
-}
-
-
-/* Spinner */
-.elgg-polls-spinner {
-	margin-top: 15px;
-	margin-bottom: 15px;
-	margin-left: auto;
-	margin-right: auto;
-	border: 1px solid #666666;
-	padding: 10px;
-	background: #FFFFFF;
-	-webkit-box-shadow: 2px 1px 5px rgba(60, 6, 10, 0.8);
- 	-moz-box-shadow: 2px 1px 5px rgba(60, 6, 10, 0.8);
-}
 
 /** Tweaks for poll sidebar in groups **/
 .elgg-polls-sidebar .entity_listing_info {
