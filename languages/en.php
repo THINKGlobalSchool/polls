@@ -44,7 +44,7 @@ $english = array(
 	'polls:label:vote' => 'Submit',
 	'polls:label:complete' => 'Complete',
 	'polls:label:incomplete' => 'Incomplete',
-	'polls:label:grouppolls' => 'Group Polls',
+	'polls:label:grouppolls' => 'Group polls',
 	'polls:label:results' => 'Detailed Results', 
 	'polls:label:showresults' => 'Show Details',
 	

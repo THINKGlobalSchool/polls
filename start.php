@@ -49,10 +49,6 @@ function polls_init() {
 	// Add in the JS
 	elgg_extend_view('js/elgg', 'js/polls');
 	
-	// Add poll sidebar
-	// @todo - don't know what this is...looks theme-specific
-	elgg_extend_view('group-extender/sidebar', 'polls/group_polls', 2);
-	
 	// Page handler
 	register_page_handler('polls', 'polls_page_handler');
 
@@ -83,11 +79,13 @@ function polls_init() {
 
 	// @todo This is used almost exclusively in the profile page now. Do you mean user_hover?
 	elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'polls_owner_block_menu_setup');
+//	elgg_register_plugin_hook_handler('register', 'menu:page', 'polls_group_sidebar_menu_setup');
 	elgg_register_plugin_hook_handler('prepare', 'menu:entity', 'polls_remove_entity_edit_link');
 
 	
-	// add the group pages tool option     
+	// add the group pages tools
     add_group_tool_option('polls', elgg_echo('groups:enablepolls'), true);
+	elgg_extend_view('page/elements/sidebar', 'polls/group_sidebar');
 					
 	// Register actions
 	$action_path = dirname(__FILE__) . '/actions/polls';
@@ -97,9 +95,6 @@ function polls_init() {
 	
 	// Setup url handler for polls
 	register_entity_url_handler('polls_url_handler', 'object', 'poll');
-	
-	// Comment handler
-	elgg_register_plugin_hook_handler('entity:annotate', 'object', 'poll_annotate_comments');
 	
 	// Register type for search
 	register_entity_type('object', 'poll');		
@@ -233,31 +228,6 @@ function polls_url_handler($entity) {
 }
 
 /**
- * Hook into the framework and provide comments on polls
- *
- * @param unknown_type $hook
- * @param unknown_type $entity_type
- * @param unknown_type $returnvalue
- * @param unknown_type $params
- * @return unknown
- */
-function poll_annotate_comments($hook, $entity_type, $returnvalue, $params) {
-	$entity = $params['entity'];
-	$full = $params['full'];
-	
-	if (
-		($entity instanceof ElggEntity) &&	// Is the right type 
-		($entity->getSubtype() == 'poll') &&  // Is the right subtype
-		($full) // This is the full view
-	)
-	{
-		// Display comments
-		return elgg_view_comments($entity);
-	}
-	
-}
-
-/**
  * Add a user hover menu for polls
  *
  * @param unknown_type $hook
@@ -269,8 +239,12 @@ function polls_owner_block_menu_setup($hook, $type, $return, $params) {
 	$owner = $params['entity'];
 	
 	// Only display todo link for users or groups with enabled todos
-	if ($owner instanceof ElggUser || $user->polls_enable == 'yes') {
+	if (elgg_instanceof($owner, 'user')) {
 		$title = elgg_echo('poll');
+		$url = "pg/polls/owner/{$owner->getGUID()}/";
+		$return[] = new ElggMenuItem('polls', $title, $url);
+	} elseif (elgg_instanceof($owner, 'group') && $owner->polls_enable == 'yes') {
+		$title = elgg_echo('polls:label:grouppolls');
 		$url = "pg/polls/group/{$owner->getGUID()}/owner";
 		$return[] = new ElggMenuItem('polls', $title, $url);
 	}

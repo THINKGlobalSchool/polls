@@ -7,7 +7,8 @@
  * @author Jeff Tilson
  * @copyright THINK Global School 2011
  * @link http://www.thinkglobalschool.com/
- * 
+ *
+ * @todo Can use a bit of cleanup
  */
 ?>
 
@@ -115,24 +116,11 @@ form.polls-vote-form {
 	width: auto;
 }
 
-p.success-message {
-	font-size: 110%;
-	font-weight: bold;
-	margin-left: auto;
-	margin-right: auto;
-	width: 250px;
-	text-align: center;
+/** Resets and tweaks for poll sidebar in groups **/
+.elgg-polls-sidebar .elgg-image-block {
+	border-bottom: 1px dotted #CCC;
 }
 
-p.elgg-polls-error {
-	font-size: 90%;
-	width: auto;
-	color: red;
-	font-weight: bold;
-}
-
-
-/** Tweaks for poll sidebar in groups **/
-.elgg-polls-sidebar .entity_listing_info {
-	width: auto;
+.elgg-polls-sidebar .elgg-button {
+	display: inline-block;
 }

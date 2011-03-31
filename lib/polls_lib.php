@@ -10,25 +10,6 @@
  * 
  */
 
-/* View a poll  */
-function polls_get_page_content_view($guid) {
-	$poll = get_entity($guid);
-	if (elgg_instanceof($poll, 'object', 'poll')) {
-		$owner = get_entity($poll->container_guid);
-		set_page_owner($owner->getGUID());
-		if (elgg_instanceof($owner, 'group')) {
-			elgg_push_breadcrumb($owner->name, elgg_get_site_url() . "pg/polls/group/{$owner->getGUID()}/owner");
-		} else {
-			elgg_push_breadcrumb($owner->name, elgg_get_site_url() . 'pg/polls/owner/' . $owner->username);
-		}
-		elgg_push_breadcrumb($poll->title, $poll->getURL());
-		$return['title'] = $poll->title;
-		$return['content'] = elgg_view_entity($poll, true);
-		$return['layout'] = 'one_column_with_sidebar';
-	}
-	return $return;
-}
-
 /**
  * Get the entities to show for based upon the filters
  *
@@ -57,17 +38,10 @@ function polls_get_page_content_list($container_guid = NULL) {
 		$list = elgg_list_entities_from_relationship($options);
 	} else {
 		$options['pagination'] = TRUE;
-		$db_prefix = elgg_get_config('dbprefix');
 
 		// if the user hasn't voted, this relationship doesn't exist.
-		$options['wheres'] = array(
-			"(NOT EXISTS (
-			SELECT 1 FROM {$db_prefix}entity_relationships polls_er
-			WHERE
-				polls_er.guid_one = '" . elgg_get_logged_in_user_guid() . "'
-				AND polls_er.relationship = '" . HAS_VOTED_RELATIONSHIP . "'
-				AND polls_er.guid_two = e.guid))"
-		);
+		$options['wheres'] = polls_get_incomplete_where_clause();
+		
 		// Little funky, registering my own function to grab incomplete polls
 		// since theres not such thing as 'elgg_list_entities_WITHOUT_relationship'
 		$list = elgg_list_entities($options);
@@ -78,67 +52,6 @@ function polls_get_page_content_list($container_guid = NULL) {
 	}
 	
 	return $list;
-}
-
-/**
- * Get page components to list of the user's friends' polls
- *
- * @param int $user_guid
- * @return array
- */
-function polls_get_page_content_friends($user_guid) {
-
-	elgg_set_page_owner_guid($user_guid);
-	$user = get_user($user_guid);
-
-	$return = array();
-
-	$return['filter_context'] = 'friends';
-	$return['title'] = elgg_echo('polls:title:friendspolls');
-	$return['layout'] = 'one_column_with_sidebar';
-
-	$crumbs_title = elgg_echo('polls:title:ownedpoll', array($user->name));
-	elgg_push_breadcrumb($crumbs_title, "pg/polls/owner/{$user->username}");
-	elgg_push_breadcrumb(elgg_echo('polls:label:friends'));
-
-	if (!$friends = get_user_friends($user_guid, ELGG_ENTITIES_ANY_VALUE, 0)) {
-		$return['content'] .= elgg_echo('friends:none:you');
-		return $return;
-	} else {
-		$options = array(
-			'type' => 'object',
-			'subtype' => 'poll',
-			'full_view' => FALSE,
-			'limit' => 5
-		);
-
-		foreach ($friends as $friend) {
-			$options['container_guids'][] = $friend->getGUID();
-		}
-
-		$list = elgg_list_entities($options);
-		if (!$list) {
-			$return['content'] = elgg_view('polls/noresults');
-		} else {
-			$return['content'] = $list;
-		}
-	}
-
-	$header = elgg_view('page_elements/content_header', array(
-		'context' => $return['filter_context'],
-		'type' => 'poll',
-		'all_link' => elgg_get_site_url() . "pg/polls",
-		'mine_link' => elgg_get_site_url() . "pg/polls/owner/" . get_loggedin_user()->username,
-		'friend_link' => elgg_get_site_url() . "pg/polls/friends/" . get_loggedin_user()->username,
-		'new_link' => elgg_get_site_url() . "pg/polls/new/" . $container_guid,
-	));
-	
-	// Get latest poll for display
-	$latest = polls_get_latest_poll_content();
-	
-	$return['content'] = $latest . $header . $return['content'];
-	
-	return $return;
 }
 
 /**
@@ -209,4 +122,22 @@ function polls_prepare_form_vars($object = null) {
 	elgg_clear_sticky_form('poll');
 
 	return $values;
+}
+
+/**
+ * Returns the SQL for checking if a relationship doesn't exist
+ *
+ * @return array
+ */
+function polls_get_incomplete_where_clause() {
+	$db_prefix = elgg_get_config('dbprefix');
+	
+	return array(
+			"(NOT EXISTS (
+			SELECT 1 FROM {$db_prefix}entity_relationships polls_er
+			WHERE
+				polls_er.guid_one = '" . elgg_get_logged_in_user_guid() . "'
+				AND polls_er.relationship = '" . HAS_VOTED_RELATIONSHIP . "'
+				AND polls_er.guid_two = e.guid))"
+		);
 }
