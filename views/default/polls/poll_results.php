@@ -105,7 +105,7 @@ $show_results = elgg_echo('polls:label:showresults');
 if ($poll->canEdit() && $total_count) {
 	$content .= <<<___HTML
 	<tr>
-		<td class='elgg-polls-foot' colspan='2'>
+		<td class='elgg-polls-foot' colspan='3'>
 			<a class='elgg-toggler' href='.$toggler_class'>$show_results</a>
 		</td>
 	</tr>

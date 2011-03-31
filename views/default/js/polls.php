@@ -53,10 +53,10 @@ elgg.polls.submitVote = function(e) {
 	var oldHTML = $container.html();
 
 	// maintain the width and height
-	var w = $table.width();
-	var h = $table.height();
+	var w = $table.outerWidth();
+	var h = $table.outerHeight();
 	var html = '<tr><td class="elgg-polls-ajax-loader"><span class="elgg-ajax-loader"></span></td></tr>';
-	// @todo this results in slightly smaller for some reason. padding?
+	
 	$table.html(html).width(w).height(h);
 
 	elgg.action($form.attr('action'), {
