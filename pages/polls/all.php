@@ -3,7 +3,7 @@
  * Polls all page
  */
 
-$title = elgg_echo('polls:title:allpolls');
+$title = elgg_echo('polls:title:all');
 $header = '';
 
 $latest_poll = polls_get_latest_poll_content();

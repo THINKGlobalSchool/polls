@@ -18,18 +18,17 @@ $english = array(
 	'polls:add' => 'New Poll',
 	
 	// Page titles 
-	'polls:title:allpolls' => 'All Polls',
+	'polls:title:all' => 'All Polls',
 	'polls:title:new' => 'New Poll', 
 	'polls:title:edit' => 'Edit Poll',
-	'polls:title:userpolls' => '%s\'s Polls',
-	'polls:title:ownedpoll' => '%s',
-	'polls:title:friendspolls' => 'Friends\' Polls',
+	'polls:title:owner' => '%s\'s Polls',
+	'polls:title:friends' => 'Friends\' Polls',
 	'polls:title:latest' => "Latest Poll",
 
 	// Menu items
-	'polls:menu:allpolls' => 'All Polls',
-	'polls:menu:yourpolls' => 'Your Polls',
-	'polls:menu:friendspolls' => 'Friend\'s Polls',
+	'polls:menu:all' => 'All Polls',
+	'polls:menu:your' => 'Your Polls',
+	'polls:menu:friends' => 'Friend\'s Polls',
 
 	// Labels 
 	'polls:label:new' => 'New Poll', 
