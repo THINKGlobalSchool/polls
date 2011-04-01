@@ -57,7 +57,7 @@ function polls_init() {
 	elgg_register_menu_item('site', array(
 		'name' => 'polls',
 		'text' => elgg_echo('polls'),
-		'href' => 'pg/polls'
+		'href' => 'polls'
 	));
 
 	// secondary tab filter menu for incomplete / complete polls
@@ -224,7 +224,7 @@ function polls_page_handler($page) {
  */
 function polls_url_handler($entity) {
 	global $CONFIG;
-	return $CONFIG->url . "pg/polls/view/{$entity->guid}/";
+	return $CONFIG->url . "polls/view/{$entity->guid}/";
 }
 
 /**
@@ -241,11 +241,11 @@ function polls_owner_block_menu_setup($hook, $type, $return, $params) {
 	// Only display todo link for users or groups with enabled todos
 	if (elgg_instanceof($owner, 'user')) {
 		$title = elgg_echo('poll');
-		$url = "pg/polls/owner/{$owner->getGUID()}/";
+		$url = "polls/owner/{$owner->getGUID()}/";
 		$return[] = new ElggMenuItem('polls', $title, $url);
 	} elseif (elgg_instanceof($owner, 'group') && $owner->polls_enable == 'yes') {
 		$title = elgg_echo('polls:label:grouppolls');
-		$url = "pg/polls/group/{$owner->getGUID()}/owner";
+		$url = "polls/group/{$owner->getGUID()}/owner";
 		$return[] = new ElggMenuItem('polls', $title, $url);
 	}
 
