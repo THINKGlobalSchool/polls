@@ -85,7 +85,6 @@ HTML;
 		'metadata' => $metadata,
 		'subtitle' => $subtitle,
 		'tags' => $tags,
-		'content' => $content,
 	);
 
 	$body .= elgg_view('page/components/summary', $params);

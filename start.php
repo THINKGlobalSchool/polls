@@ -168,52 +168,6 @@ function polls_page_handler($page) {
 	elgg_pop_context();
 
 	return true;
-	
-	
-	
-	switch ($page_type) {
-		case 'owner':
-			$user = get_user_by_username($page[1]);
-			$params = polls_get_page_content_list($user->guid);
-			break;
-
-		case 'friends': 
-			$user = get_user_by_username($page[1]);
-			$params = polls_get_page_content_friends($user->guid);
-			break;
-		
-		case 'view': 
-			set_context('polls-detailed');
-			$params = polls_get_page_content_view($page[1]);
-			break;
-
-		case 'new':
-			// backward compatibility
-		case 'add':
-			$params = polls_get_page_content_edit($page_type, $page[1]);
-			break;
-
-		case 'ajax_result':
-			$poll = get_entity($page[1]);
-			if ($poll) {
-				echo elgg_view('polls/poll_results', array('entity' => $poll));
-			}
-			exit; // Ajax, don't load anything else
-			break;
-
-		case 'group':
-			$params = polls_get_page_content_list($page[1]);
-			break;
-
-		case 'all':
-		default:
-			$params = polls_get_page_content_list();
-			break;
-	}
-
-	$body = elgg_view_layout($params['layout'], $params);
-
-	echo elgg_view_page($params['title'], $body);
 }
 
 /**

@@ -32,7 +32,6 @@ $content .= polls_get_page_content_list($owner->getGUID());
 $options = array(
 	'content' => $content,
 	'title' => $title,
-	'sidebar' => elgg_view('bookmarks/sidebar'),
 	'header' => $header
 );
 
