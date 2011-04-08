@@ -22,7 +22,7 @@ elgg.polls.init = function() {
  */
 elgg.polls.addOption = function(e) {
 	e.preventDefault();
-	var li = '<li><input type="text" class="elgg-poll-option" name="poll_options[]">'
+	var li = '<li><input type="text" class="elgg-poll-option" name="options[]">'
 		+ '<a class="elgg-polls-remove-option"><span class="elgg-icon elgg-icon-delete"></span></a></li>';
 	var $ul = $(this).parent().find('ul.elgg-polls-options');
 	$ul.append(li);
