@@ -13,6 +13,6 @@
 
    	<requires>
 		<type>elgg_version</type>
-		<version>2010111501</version>
+		<version>2011032200</version>
 	</requires>
 </plugin_manifest>
