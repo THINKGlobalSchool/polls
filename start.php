@@ -50,7 +50,7 @@ function polls_init() {
 	elgg_extend_view('js/elgg', 'js/polls');
 	
 	// Page handler
-	register_page_handler('polls', 'polls_page_handler');
+	elgg_register_page_handler('polls', 'polls_page_handler');
 
 	// Add menus
 	// site menu for main tabs
@@ -94,10 +94,10 @@ function polls_init() {
 	elgg_register_action('polls/delete', "$action_path/delete.php");
 	
 	// Setup url handler for polls
-	register_entity_url_handler('polls_url_handler', 'object', 'poll');
+	elgg_register_entity_url_handler('object', 'poll', 'polls_url_handler');
 	
 	// Register type for search
-	register_entity_type('object', 'poll');		
+	elgg_register_entity_type('object', 'poll');		
 
 	return true;
 }
@@ -229,4 +229,4 @@ function polls_remove_entity_edit_link($hook, $type, $return, $params) {
 	return $return;
 }
 
-register_elgg_event_handler('init', 'system', 'polls_init');
+elgg_register_event_handler('init', 'system', 'polls_init');
