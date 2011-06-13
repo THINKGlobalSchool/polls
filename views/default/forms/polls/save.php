@@ -91,39 +91,39 @@ $polls_save_input = elgg_view('input/submit', array(
 	'value' => elgg_echo('polls:label:save')
 ));
 
-$form_body = <<<EOT
-	<p>
+$form_body = <<<HTML
+	<div>
 		<label>$title_label</label>
 		$title_input
-	</p>
-	<p>
+	</div>
+	<div>
 		<label>$description_label</label>
 		$description_input
-	</p>
-	<p>
+	</div>
+	<div>
 		<label>$poll_label</label>
 		$poll_input
-	</p>
-	<p>
+	</div>
+	<div>
 		<label>$subtypes_label</label>
 		$subtypes_input
-	</p>
+	</div>
 	<div style='clear: both;'></div>
 	<br />
-	<p>
+	<div>
 		<label>$tags_label</label>
 		$tags_input
-	</p>
+	</div>
 	<br />
-	<p>
+	<div>
 		<label>$access_label</label>
 		$access_input
-	</p>
-	<p>
+	</div>
+	<div class="elgg-form-footer-alt">
 		$polls_save_input
 		$poll_guid
 		$container_guid_input
-	</p>
-EOT;
+	</div>
+HTML;
 
 echo $form_body;
