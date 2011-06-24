@@ -10,12 +10,11 @@
  * 
  */
 
-$performed_by = get_entity($vars['item']->subject_guid);
-$object = get_entity($vars['item']->object_guid);
-$url = $object->getURL();
-$user_url = "<a href=\"{$performed_by->getURL()}\">{$performed_by->name}</a>";
-$blurb = elgg_echo('polls:river:poll:create', array("<a href=\"{$object->getURL()}\">{$object->title}</a>"));
+$object = $vars['item']->getObjectEntity();
 
+echo elgg_view('river/item', array(
+	'item' => $vars['item'],
+));
 $poll = '';
 
 if (elgg_is_logged_in()) {

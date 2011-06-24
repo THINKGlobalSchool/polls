@@ -49,7 +49,7 @@ $english = array(
 	'polls:label:showresults' => 'Show Details',
 	
 	// River
-	'polls:river:poll:create' => 'created a Poll titled %s',
+	'river:create:object:poll' => '%s created a Poll titled %s',
 		
 	// Messages
 	'polls:error:notfound' => 'Poll not found',

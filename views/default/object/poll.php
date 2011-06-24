@@ -67,7 +67,7 @@ if ($full && !elgg_in_context('gallery')) {
 		'subtitle' => $subtitle,
 		'tags' => $tags,
 	);
-	$list_body = elgg_view('page/components/summary', $params);
+	$list_body = elgg_view('object/elements/summary', $params);
 	$poll_info = elgg_view_image_block($owner_icon, $list_body);
 	$poll = elgg_view('polls/poll_container', $vars);
 
@@ -87,6 +87,6 @@ HTML;
 		'tags' => $tags,
 	);
 
-	$body .= elgg_view('page/components/summary', $params);
+	$body .= elgg_view('object/elements/summary', $params);
 	echo elgg_view_image_block($owner_icon, $body);
 }

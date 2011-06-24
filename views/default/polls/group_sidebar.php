@@ -47,7 +47,7 @@ if ($polls){
 				'title' => $title,
 				'subtitle' => $time,
 			);
-		$list_body = elgg_view('page/components/summary', $params);
+		$list_body = elgg_view('object/elements/summary', $params);
 		$content .= elgg_view_image_block($icon, $list_body);
 	}
 }
