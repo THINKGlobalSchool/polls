@@ -52,12 +52,15 @@ if ($polls){
 	}
 }
 
-$create_url = "polls/add/" . $group->getGUID();
-$content .= elgg_view('output/url', array(
-	'href' => $create_url,
-	'text' => elgg_echo('polls:add'),
-	'class' => 'elgg-button elgg-button-action mtm clearfix'
-));
+// If user is a member, display new poll link
+if ($group->isMember(elgg_get_logged_in_user_entity())) {
+	$create_url = "polls/add/" . $group->getGUID();
+	$content .= elgg_view('output/url', array(
+		'href' => $create_url,
+		'text' => elgg_echo('polls:add'),
+		'class' => 'elgg-button elgg-button-action mtm clearfix'
+	));
+}
 
 $title = "$group_polls <span class=\"right small elgg-polls-subtext\">$all_link</span>";
 
