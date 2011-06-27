@@ -14,7 +14,6 @@ $content = elgg_view_form('polls/save', array(), $vars);
 
 $body = elgg_view_layout('content', array(
 	'filter' => '',
-	'buttons' => '',
 	'content' => $content,
 	'title' => $title,
 ));

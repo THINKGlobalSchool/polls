@@ -11,12 +11,13 @@ $latest_poll = polls_get_latest_poll_content();
 if ($latest_poll) {
 	// include the latest poll in the header, then show the standard header
 	$header .= elgg_view('page/layouts/content/header', array(
-		'buttons' => '',
 		'title' => elgg_echo('polls:title:latest')
 	));
 
 	$header .= $latest_poll;
 }
+
+elgg_register_add_button();
 
 $header .= elgg_view('page/layouts/content/header');
 
