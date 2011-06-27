@@ -35,7 +35,7 @@ if ($friend_guids) {
 
 elgg_register_add_button();
 
-$header .= elgg_view('page/layouts/content/header');
+$header .= elgg_view('page/layouts/content/header', array('title' => elgg_echo('polls:title:friends')));
 
 // show the secondary filter menu.
 $content = elgg_view_menu('polls-status', array(

@@ -19,7 +19,7 @@ if ($latest_poll) {
 
 elgg_register_add_button();
 
-$header .= elgg_view('page/layouts/content/header');
+$header .= elgg_view('page/layouts/content/header', array('title' => $title));
 
 // show the secondary filter menu.
 $content = elgg_view_menu('polls-status', array(

@@ -18,9 +18,19 @@ if ($latest_poll) {
 	$header .= $latest_poll;
 }
 
-elgg_register_add_button();
+if ($owner->getGUID() == elgg_get_logged_in_user_guid()) {
+	$filter_context = 'mine';
+	elgg_register_add_button();
+} else if (elgg_instanceof($owner, 'group')) {
+	$filter = FALSE;
+	elgg_register_add_button();
+} else {
+	$filter_context = 'none';
+}
 
-$header .= elgg_view('page/layouts/content/header');
+$header .= elgg_view('page/layouts/content/header', array(
+	'title' => elgg_echo('polls:title:owner', array($owner->name))
+));
 
 // show the secondary filter menu.
 $content = elgg_view_menu('polls-status', array(
@@ -36,11 +46,8 @@ $options = array(
 	'header' => $header
 );
 
-if ($owner->getGUID() == elgg_get_logged_in_user_guid()) {
-	$options['filter_context'] = 'mine';
-} else {
-	$options['filter'] = false;
-}
+$options['filter_context'] = $filter_context;
+$options['filter'] = $filter;
 
 $body .= elgg_view_layout('content', $options);
 
