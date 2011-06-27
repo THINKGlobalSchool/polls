@@ -119,7 +119,7 @@ $form_body = <<<HTML
 		<label>$access_label</label>
 		$access_input
 	</div>
-	<div class="elgg-form-footer-alt">
+	<div class="elgg-foot">
 		$polls_save_input
 		$poll_guid
 		$container_guid_input
