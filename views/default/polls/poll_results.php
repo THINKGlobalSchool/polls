@@ -107,7 +107,7 @@ if ($poll->canEdit() && $total_count) {
 	$content .= <<<___HTML
 	<tr>
 		<td class='elgg-polls-foot' colspan='3'>
-			<a class='elgg-toggler' href='.$toggler_class'>$show_results</a>
+			<a rel='toggle' href='.$toggler_class'>$show_results</a>
 		</td>
 	</tr>
 ___HTML;
