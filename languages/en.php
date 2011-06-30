@@ -50,6 +50,7 @@ $english = array(
 	
 	// River
 	'river:create:object:poll' => '%s created a Poll titled %s',
+	'river:comment:object:poll' => '%s commented on a Poll titled %s',
 		
 	// Messages
 	'polls:error:notfound' => 'Poll not found',
