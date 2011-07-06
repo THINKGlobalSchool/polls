@@ -33,7 +33,7 @@ if ($friend_guids) {
 	}
 }
 
-elgg_register_add_button();
+elgg_register_title_button();
 
 $header .= elgg_view('page/layouts/content/header', array('title' => elgg_echo('polls:title:friends')));
 

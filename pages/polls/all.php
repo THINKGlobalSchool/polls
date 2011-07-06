@@ -17,7 +17,7 @@ if ($latest_poll) {
 	$header .= $latest_poll;
 }
 
-elgg_register_add_button();
+elgg_register_title_button();
 
 $header .= elgg_view('page/layouts/content/header', array('title' => $title));
 

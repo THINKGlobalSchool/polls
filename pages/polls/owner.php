@@ -20,10 +20,10 @@ if ($latest_poll) {
 
 if ($owner->getGUID() == elgg_get_logged_in_user_guid()) {
 	$filter_context = 'mine';
-	elgg_register_add_button();
+	elgg_register_title_button();
 } else if (elgg_instanceof($owner, 'group')) {
 	$filter = FALSE;
-	elgg_register_add_button();
+	elgg_register_title_button();
 } else {
 	$filter_context = 'none';
 }
