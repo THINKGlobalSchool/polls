@@ -30,7 +30,7 @@ foreach($annotations as $vote) {
 	echo "Name: " . $vote->name . "<br/>Value: " . $vote->value . "</br>";
 	
 	create_annotation($poll->getGUID(), $name, $value, $vote->value_type, $vote->owner_guid, $vote->access_id);
-	delete_annotation($vote->id);
+	elgg_delete_annotations(array('annotation_id' => $vote->id));
 }
 
 print_r_html($annotations);

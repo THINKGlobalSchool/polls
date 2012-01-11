@@ -20,7 +20,7 @@ if (!elgg_instanceof($poll, 'object', 'poll')) {
 }
 
 // Make sure we have a poll, and that the user hasn't voted
-$has_voted = has_user_completed_poll(get_loggedin_user(), $poll);
+$has_voted = has_user_completed_poll(elgg_get_logged_in_user_entity(), $poll);
 
 if ($has_voted) {
 	register_error(elgg_echo('polls:error:already_voted'));

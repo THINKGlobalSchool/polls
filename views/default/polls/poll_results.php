@@ -17,13 +17,6 @@ if (!elgg_instanceof($poll, 'object', 'poll')) {
 	return true;
 }
 
-// should always use polls/poll_container
-// Only display if we've already voted
-//if (!has_user_completed_poll(get_loggedin_user(), $poll)) {
-//	echo elgg_view_form('polls/vote', array(), $vars);
-//	return true;
-//}
-
 $options = unserialize($poll->poll_content);
 $content .= "<table class='elgg-polls-vote'>";
 $content .= "<tr><td class='elgg-polls-title' colspan='3'>{$poll->title}</td></tr>";
