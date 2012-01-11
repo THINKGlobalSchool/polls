@@ -33,7 +33,7 @@ if (!$vote) {
 }
 
 if ($poll->annotate($vote, $vote, $poll->access_id, elgg_get_logged_in_user_guid())) {
-	add_entity_relationship(get_loggedin_userid(), HAS_VOTED_RELATIONSHIP, $guid);
+	add_entity_relationship(elgg_get_logged_in_user_guid(), HAS_VOTED_RELATIONSHIP, $guid);
 	update_entity_last_action($guid);
 	if (elgg_is_xhr()) {
 		echo elgg_view('polls/poll_results', array('entity' => $poll));

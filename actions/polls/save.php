@@ -56,7 +56,7 @@ if (!$poll->save()) {
 elgg_clear_sticky_form('poll');
 
 // Add to river
-add_to_river('river/object/poll/create', 'create', get_loggedin_userid(), $poll->getGUID());
+add_to_river('river/object/poll/create', 'create', elgg_get_logged_in_user_guid(), $poll->getGUID());
 
 // Forward on
 system_message(elgg_echo('polls:success:save'));
