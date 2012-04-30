@@ -71,6 +71,4 @@ elgg.polls.submitVote = function(e) {
 	});
 }
 
-
 elgg.register_hook_handler('init', 'system', elgg.polls.init);
-//</script>

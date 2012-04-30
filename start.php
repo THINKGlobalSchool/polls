@@ -52,13 +52,18 @@ function polls_init() {
 	// Page handler
 	elgg_register_page_handler('polls', 'polls_page_handler');
 
-	// Add menus
-	// site menu for main tabs
-	elgg_register_menu_item('site', array(
-		'name' => 'polls',
-		'text' => elgg_echo('polls'),
-		'href' => 'polls'
-	));
+	// Add menu items for logged in users
+	if (elgg_is_logged_in()) {
+		// Site menu
+		elgg_register_menu_item('site', array(
+			'name' => 'polls',
+			'text' => elgg_echo('polls'),
+			'href' => 'polls'
+		));
+		
+		// Owner block
+		elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'polls_owner_block_menu_setup');
+	}
 
 	// secondary tab filter menu for incomplete / complete polls
 	elgg_register_menu_item('polls-status', array(
@@ -77,10 +82,7 @@ function polls_init() {
 		'priority' => 2
 	));
 
-	// @todo This is used almost exclusively in the profile page now. Do you mean user_hover?
-	elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'polls_owner_block_menu_setup');
-//	elgg_register_plugin_hook_handler('register', 'menu:page', 'polls_group_sidebar_menu_setup');
-	elgg_register_plugin_hook_handler('prepare', 'menu:entity', 'polls_remove_entity_edit_link');
+	elgg_register_plugin_hook_handler('register', 'menu:entity', 'polls_remove_entity_edit_link');
 
 	
 	// add the group pages tools
@@ -195,7 +197,7 @@ function polls_owner_block_menu_setup($hook, $type, $return, $params) {
 	// Only display todo link for users or groups with enabled todos
 	if (elgg_instanceof($owner, 'user')) {
 		$title = elgg_echo('poll');
-		$url = "polls/owner/{$owner->getGUID()}/";
+		$url = "polls/owner/{$owner->username}/";
 		$return[] = new ElggMenuItem('polls', $title, $url);
 	} elseif (elgg_instanceof($owner, 'group') && $owner->polls_enable == 'yes') {
 		$title = elgg_echo('polls:label:grouppolls');
@@ -219,9 +221,9 @@ function polls_remove_entity_edit_link($hook, $type, $return, $params) {
 
 	// don't display edit link for polls
 	if (elgg_instanceof($entity, 'object', 'poll')) {
-		foreach ($return['default'] as $i => $menu) {
+		foreach ($return as $idx => $menu) {
 			if ($menu->getName() == 'edit') {
-				unset ($return['default'][$i]);
+				unset ($return[$idx]);
 			}
 		}
 	}
