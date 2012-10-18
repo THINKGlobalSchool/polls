@@ -64,26 +64,12 @@ function polls_init() {
 		// Owner block
 		elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'polls_owner_block_menu_setup');
 	}
+	
+	// Pagesetup event handler
+	elgg_register_event_handler('pagesetup','system','polls_pagesetup');
 
-	// secondary tab filter menu for incomplete / complete polls
-	elgg_register_menu_item('polls-status', array(
-		'name' => 'incomplete',
-		'text' => elgg_echo('polls:label:incomplete'),
-		'href' => elgg_http_add_url_query_elements(current_page_url(), array('polls_status' => 'incomplete')),
-		'selected' => (get_input('polls_status', 'incomplete') == 'incomplete'),
-		'priority' => 1
-	));
-
-	elgg_register_menu_item('polls-status', array(
-		'name' => 'complete',
-		'text' => elgg_echo('polls:label:complete'),
-		'href' => elgg_http_add_url_query_elements(current_page_url(), array('polls_status' => 'complete')),
-		'selected' => (get_input('polls_status', 'incomplete') == 'complete'),
-		'priority' => 2
-	));
-
+	// Polls entity menu setup
 	elgg_register_plugin_hook_handler('register', 'menu:entity', 'polls_remove_entity_edit_link');
-
 	
 	// add the group pages tools
     add_group_tool_option('polls', elgg_echo('groups:enablepolls'), true);
@@ -102,6 +88,32 @@ function polls_init() {
 	elgg_register_entity_type('object', 'poll');		
 
 	return true;
+}
+
+/**
+* Pagesetup event handler
+* 
+* @return NULL
+ */
+function polls_pagesetup() {
+	if (elgg_in_context('polls')) {
+		// secondary tab filter menu for incomplete / complete polls
+		elgg_register_menu_item('polls-status', array(
+			'name' => 'incomplete',
+			'text' => elgg_echo('polls:label:incomplete'),
+			'href' => elgg_http_add_url_query_elements(current_page_url(), array('polls_status' => 'incomplete')),
+			'selected' => (get_input('polls_status', 'incomplete') == 'incomplete'),
+			'priority' => 1
+		));
+
+		elgg_register_menu_item('polls-status', array(
+			'name' => 'complete',
+			'text' => elgg_echo('polls:label:complete'),
+			'href' => elgg_http_add_url_query_elements(current_page_url(), array('polls_status' => 'complete')),
+			'selected' => (get_input('polls_status', 'incomplete') == 'complete'),
+			'priority' => 2
+		));
+	}
 }
 
 /**
