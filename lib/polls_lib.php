@@ -69,7 +69,10 @@ function polls_get_latest_poll_content($container_guid = ELGG_ENTITIES_ANY_VALUE
 	));
 	
 	if ($latest_poll[0]) {
-		return elgg_view_entity($latest_poll[0], array('full_view' => true));
+		elgg_push_context('widgets');
+		$poll =  elgg_view_entity($latest_poll[0], array('full_view' => true));
+		elgg_pop_context();
+		return $poll;
 	} else {
 		return '';
 	}
