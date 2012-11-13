@@ -12,7 +12,7 @@
 
 $group = elgg_get_page_owner_entity();
 
-if (!elgg_instanceof($group, 'group') || !$group->polls_enable) {
+if (!elgg_instanceof($group, 'group') || $group->polls_enable != 'yes') {
 	return true;
 }
 
