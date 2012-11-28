@@ -68,6 +68,8 @@ function polls_init() {
 	// Pagesetup event handler
 	elgg_register_event_handler('pagesetup','system','polls_pagesetup');
 
+	register_notification_object('object', 'poll', elgg_echo('New Poll'));
+
 	// Polls entity menu setup
 	elgg_register_plugin_hook_handler('register', 'menu:entity', 'polls_remove_entity_edit_link');
 	
@@ -75,6 +77,10 @@ function polls_init() {
     add_group_tool_option('polls', elgg_echo('groups:enablepolls'), true);
 	elgg_extend_view('page/elements/sidebar', 'polls/group_sidebar');
 					
+	// Notifications
+	register_notification_object('object', 'poll', elgg_echo('polls:notification:subject'));
+	elgg_register_plugin_hook_handler('notify:entity:message', 'object', 'polls_notify_message');
+
 	// Register actions
 	$action_path = dirname(__FILE__) . '/actions/polls';
 	elgg_register_action('polls/save', "$action_path/save.php");
@@ -241,6 +247,34 @@ function polls_remove_entity_edit_link($hook, $type, $return, $params) {
 	}
 
 	return $return;
+}
+
+
+/**
+ * Set the notification message for polls
+ * 
+ * @param string $hook    Hook name
+ * @param string $type    Hook type
+ * @param string $message The current message body
+ * @param array  $params  Parameters about the blog posted
+ * @return string
+ */
+function polls_notify_message($hook, $type, $message, $params) {
+	$entity = $params['entity'];
+	$to_entity = $params['to_entity'];
+	$method = $params['method'];
+	if (elgg_instanceof($entity, 'object', 'poll')) {
+		$descr = $entity->description;
+		$title = $entity->title;
+		$owner = $entity->getOwnerEntity();
+		return elgg_echo('polls:notification:body', array(
+			$owner->name,
+			$title,
+			$descr,
+			$entity->getURL()
+		));
+	}
+	return null;
 }
 
 elgg_register_event_handler('init', 'system', 'polls_init');
