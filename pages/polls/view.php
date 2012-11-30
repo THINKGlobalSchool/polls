@@ -7,6 +7,12 @@
 
 $poll = get_entity(get_input('guid'));
 
+if (!elgg_instanceof($poll, 'object', 'poll')) {
+	register_error(elgg_echo('noaccess'));
+	$_SESSION['last_forward_from'] = current_page_url();
+	forward('');
+}
+
 $page_owner = elgg_get_page_owner_entity();
 
 $crumbs_title = $page_owner->name;
