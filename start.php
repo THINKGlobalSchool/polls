@@ -75,7 +75,7 @@ function polls_init() {
 	
 	// add the group pages tools
     add_group_tool_option('polls', elgg_echo('groups:enablepolls'), true);
-	elgg_extend_view('page/elements/sidebar', 'polls/group_sidebar');
+	//elgg_extend_view('page/elements/sidebar', 'polls/group_sidebar');
 					
 	// Notifications
 	register_notification_object('object', 'poll', elgg_echo('polls:notification:subject'));
